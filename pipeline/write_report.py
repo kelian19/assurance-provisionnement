@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def main():
- r=json.loads((ROOT/'reports/validation.json').read_text());course=r['bootstrap']['course'];cas=r['bootstrap']['cas'];a=course['summary'];c=course['diagnostics']
+ r=json.loads((ROOT/'reports/validation.json').read_text(encoding='utf-8'));course=r['bootstrap']['course'];cas=r['bootstrap']['cas'];a=course['summary'];c=course['diagnostics']
  rows='\n'.join(f"| {v['dataset']} | {v['reserve']:,.6f} | {v['mack_rmsep']:,.6f} | {v['absolute_reserve_gap']:.3g} | {v['absolute_rmsep_gap']:.3g} |" for v in r['deterministic_comparisons'])
  text=f'''# Résultats de validation — reserving-v1
 
@@ -63,7 +63,7 @@ Les avertissements de dépréciation pandas émis par chainladder sont conservé
 ## Décision
 V1 locale utilisable comme démonstrateur actuariel vérifié. Aucune approbation de provision compagnie ou de capital réglementaire n'est revendiquée. Avant exploitation : revoir les sources, la nature des montants, les unités, les changements de cadence, l'inflation et la queue. Aucune publication ou mise en ligne publique n'a été réalisée.
 '''
- (ROOT/'reports/RESULTATS.md').write_text(text)
+ (ROOT/'reports/RESULTATS.md').write_text(text,encoding='utf-8')
  post=f'''# Brouillon LinkedIn — non publié
 
 J’ai construit un outil de provisionnement en Python, avec une interface Streamlit pour passer du triangle à une estimation expliquée.
@@ -80,6 +80,6 @@ Code, méthodes, résultats et guide local : https://github.com/kelian19/assuran
 
 #Actuariat #Provisionnement #Python #Assurance
 '''
- (ROOT/'docs/POST_LINKEDIN_PROVISIONNEMENT.md').write_text(post)
+ (ROOT/'docs/POST_LINKEDIN_PROVISIONNEMENT.md').write_text(post,encoding='utf-8')
  print('Rapport et brouillon LinkedIn produits depuis les résultats mesurés.')
 if __name__=='__main__':main()

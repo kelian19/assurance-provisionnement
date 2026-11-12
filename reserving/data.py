@@ -10,7 +10,7 @@ DATASETS={'course':'Mack — triangle du cours','genins':'GenIns — bibliothèq
 
 def source_manifest():
  path=ROOT/'data/raw/manifest.json'
- return json.loads(path.read_text()) if path.exists() else {}
+ return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
 
 def prepare_course():
  folder=ROOT/'data/raw';folder.mkdir(parents=True,exist_ok=True)
@@ -20,11 +20,11 @@ def prepare_course():
  m=source_manifest()
  published=ROOT/'reports/data_manifest.json'
  if published.exists():
-  expected=json.loads(published.read_text()).get('course',{}).get('sha256')
+  expected=json.loads(published.read_text(encoding='utf-8')).get('course',{}).get('sha256')
   if expected and expected!=digest:raise ValueError('La source distante diffère de la version documentée. Revue de version requise.')
  if m.get('course',{}).get('sha256',digest)!=digest:raise ValueError('L’empreinte locale du triangle du cours a changé.')
  m['course']={'url':COURSE_URL,'sha256':digest,'bytes':path.stat().st_size,'unit':'unités non précisées dans le fichier','calendar':'non précisé dans le fichier'}
- manifest.write_text(json.dumps(m,ensure_ascii=False,indent=2))
+ manifest.write_text(json.dumps(m,ensure_ascii=False,indent=2),encoding='utf-8')
  return path
 
 def load_dataset(key):
@@ -33,7 +33,7 @@ def load_dataset(key):
   if not path.exists():raise FileNotFoundError('Données du cours absentes. Exécuter python -m pipeline.prepare_data avant de lancer l’interface.')
   metadata=source_manifest().get('course',{})
   if metadata.get('sha256')!=hashlib.sha256(path.read_bytes()).hexdigest():raise ValueError('Empreinte du fichier source invalide.')
-  rows=[[float(v.strip()) if v.strip() else np.nan for v in line.split('&')] for line in path.read_text().splitlines()]
+  rows=[[float(v.strip()) if v.strip() else np.nan for v in line.split('&')] for line in path.read_text(encoding='utf-8').splitlines()]
   return Triangle(np.array(rows),tuple(f'Année {i+1}' for i in range(len(rows))),DATASETS[key],'unités du cours','unspecified',COURSE_URL)
  if key in ('genins','raa'):
   t=cl.load_sample(key)

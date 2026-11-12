@@ -57,7 +57,10 @@ Les reprises négatives sont conservées pour Mack, mais le bootstrap ODP de cet
 ```sh
 .venv/bin/python -m pytest tests -q
 .venv/bin/python -m pipeline.validate_project
+.venv/bin/pip install matplotlib && .venv/bin/python -m pipeline.make_figures   # figures de la note LaTeX
 ```
+
+`pipeline.make_figures` rejoue le bootstrap du cours et échoue si ses statistiques diffèrent de celles publiées dans `reports/calculation_course.json`. Un test (`test_bootstrap.py`) vérifie la même reproduction : il a révélé qu'une provision nulle renvoyée en NaN par `chainladder` pour une origine autre que la première (6 scénarios sur 5 000) faisait échouer le garde-fou du bootstrap ; ce cas est désormais admis seulement si l'ultime est égal au dernier cumul, et les statistiques publiées sont reproduites à l'identique.
 
 Le pipeline de validation reproduit les comparaisons, trois diagonales masquées par jeu et 5 000 simulations à graine 42 pour le cours et le cas CAS. Les scénarios complets générés restent hors Git ; les statistiques et diagnostics sont versionnés.
 
@@ -79,3 +82,4 @@ Schnieper et inflation restent des extensions. Avant une exploitation compagnie,
 ## Note méthodologique à partager
 
 [PDF — méthodes et mathématiques](docs/latex/note_provisionnement.pdf) · [Source LaTeX](docs/latex/note_provisionnement.tex).
+La note comporte quatre figures (facteurs et courbes de développement, erreur de Mack, distribution bootstrap, diagonales masquées), générées par `python -m pipeline.make_figures`.

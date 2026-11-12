@@ -24,7 +24,7 @@ def main():
   if key in ['course','cas']:
    b=odp_bootstrap(t.cumulative,simulations=5000,seed=42)
    boots[key]={'summary':b.summary(),'diagnostics':b.diagnostics}
-   (ROOT/f'reports/calculation_{key}.json').write_text(json.dumps(build_report(t,m,b),ensure_ascii=False,indent=2,allow_nan=False))
+   (ROOT/f'reports/calculation_{key}.json').write_text(json.dumps(build_report(t,m,b),ensure_ascii=False,indent=2,allow_nan=False),encoding='utf-8')
    # Simulation values are generated outputs, not raw source observations.
    pd.DataFrame({'scenario':np.arange(1,5001),'reserve':b.predictive_reserves}).to_csv(ROOT/f'reports/scenarios_{key}.csv',index=False)
  versions={name:md.version(name) for name in ['numpy','pandas','scipy','chainladder','streamlit','plotly','pytest','scikit-learn','sparse','numba']}
@@ -36,7 +36,7 @@ def main():
  'R_reference_executed':False,'R_reference_reason':'Rscript absent in execution environment; optional R validation script supplied',
  'limits':['Fixed tail factor 1','No inflation or discounting','No one-year capital interpretation','Only three known calendar diagonals, not validation of ultimate tails','Bootstrap uses signed Gamma library extension for negative fitted future increments','Deterministic h=1 correction supplied to avoid undefined memory in chainladder 0.10.1','Units of source files preserved, not automatically interpreted as EUR or USD'],
  'publication':'local only; no Site registration or hosting deployment'}
- (ROOT/'reports/validation.json').write_text(json.dumps(report,ensure_ascii=False,indent=2,allow_nan=False))
+ (ROOT/'reports/validation.json').write_text(json.dumps(report,ensure_ascii=False,indent=2,allow_nan=False),encoding='utf-8')
  direct=['numpy','pandas','scipy','chainladder','streamlit','plotly','pytest','scikit-learn','sparse','numba']
  (ROOT/'requirements.txt').write_text('\n'.join(f'{name}=={versions[name]}' for name in direct)+'\n')
  print(json.dumps({'comparisons':comparisons,'bootstrap':boots,'backtests':backtests},indent=2))

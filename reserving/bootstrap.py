@@ -30,6 +30,18 @@ class StableBootstrapODP(cl.BootstrapODPSample):
         out=np.full((n,n),np.nan);out.T[mask.T]=adjustment
         return out
 
+def _check_reserves(reserve,ultimate,latest):
+    """Refuse les simulations invalides sans confondre NaN de bibliothèque et provision nulle.
+
+    chainladder renvoie NaN pour une provision exactement nulle (toujours pour l'année
+    complètement développée ; parfois pour une autre origine quand le dernier facteur
+    simulé est inférieur à 1 et que l'ultime est ramené au dernier cumul). Un NaN n'est
+    donc admis que si l'ultime est fini et égal au dernier cumul ; tout autre cas est rejeté.
+    """
+    if np.isinf(reserve).any() or not np.isfinite(ultimate).all():raise ValueError('Simulation invalide : ultime non fini ou provision infinie.')
+    missing=np.isnan(reserve)
+    if not np.array_equal(ultimate[missing],latest[missing]):raise ValueError('Simulation invalide : valeur manquante ne correspondant pas à une provision nulle.')
+
 @dataclass
 class BootstrapResult:
     predictive_reserves: np.ndarray
@@ -60,8 +72,8 @@ def odp_bootstrap(cumulative, *, simulations=5000,seed=42):
         predictive_model=cl.Chainladder().fit(samples)
         parameter_raw=parameter_model.ibnr_.values[:,0,:,0]
         predictive_raw=predictive_model.ibnr_.values[:,0,:,0]
-        for raw in [parameter_raw,predictive_raw]:
-            if np.isinf(raw).any() or not np.isfinite(raw[:,1:]).all():raise ValueError('Simulation invalide : aucune valeur manquante hors année complètement développée n’est tolérée.')
+        for model,raw in [(parameter_model,parameter_raw),(predictive_model,predictive_raw)]:
+            _check_reserves(raw,model.ultimate_.values[:,0,:,0],model.latest_diagonal.values[:,0,:,0].reshape(raw.shape))
         parameter_reserves=np.sum(np.nan_to_num(parameter_raw,nan=0.),axis=1)
         by_origin=np.nan_to_num(predictive_raw,nan=0.)
         predictive=np.sum(by_origin,axis=1)

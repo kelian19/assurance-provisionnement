@@ -25,3 +25,17 @@ def test_saturated_leverages_are_explicitly_zero():
  sample=StableBootstrapODP(n_sims=100,random_state=42,hat_adj=True).fit(as_chainladder(load_dataset('course').cumulative))
  assert sample.hat_[0,-1]==0 and sample.hat_[-1,0]==0
  assert np.isfinite(sample.hat_[observed_mask(10)]).all()
+
+def test_zero_reserve_nan_is_accepted_but_other_missing_values_are_not():
+ from reserving.bootstrap import _check_reserves
+ reserve=np.array([[np.nan,np.nan,10.]]);ultimate=np.array([[5.,7.,15.]]);latest=np.array([[5.,7.,5.]])
+ _check_reserves(reserve,ultimate,latest)
+ with pytest.raises(ValueError,match='manquante'):_check_reserves(reserve,ultimate+np.array([[0,1,0]]),latest)
+ with pytest.raises(ValueError,match='non fini'):_check_reserves(reserve,np.array([[5.,np.nan,15.]]),latest)
+
+def test_course_bootstrap_with_published_settings_reproduces_published_statistics():
+ import json
+ from pathlib import Path
+ t=load_dataset('course');summary=odp_bootstrap(t.cumulative,simulations=5000,seed=42).summary()
+ published=json.loads((Path(__file__).resolve().parents[1]/'reports/calculation_course.json').read_text(encoding='utf-8'))['bootstrap']['summary']
+ for key in ['mean','median','std','q95','q99']:assert summary[key]==pytest.approx(published[key],rel=1e-9)

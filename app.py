@@ -138,7 +138,7 @@ with t_val:
   st.download_button('Exporter la validation',backtest.to_csv(index=False),file_name='validation_diagonales.csv',mime='text/csv')
  report_path=ROOT/'reports/validation.json'
  if report_path.exists():
-  v=json.loads(report_path.read_text());st.subheader('Réconciliation des références livrées')
+  v=json.loads(report_path.read_text(encoding='utf-8'));st.subheader('Réconciliation des références livrées')
   st.dataframe(pd.DataFrame(v['deterministic_comparisons']),hide_index=True,width='stretch')
   st.caption('La comparaison utilise exactement les mêmes données et l’approximation finale de variance « Mack ». Le triangle du cours diffère de GenIns en une cellule : 2 864 494 contre 2 864 498. Les deux jeux sont conservés séparément.')
  st.warning('La reproduction des références vérifie les calculs. Elle ne valide pas les hypothèses sur votre portefeuille : indépendance des années, stabilité des cadences, changements de gestion, inflation et facteur de queue restent à examiner.')

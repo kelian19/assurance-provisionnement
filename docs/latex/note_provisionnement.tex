@@ -1,8 +1,15 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{lmodern}
-\renewcommand{\familydefault}{\sfdefault}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{lmodern}
+  \renewcommand{\familydefault}{\sfdefault}
+\else
+  \usepackage{fontspec}
+  \setmainfont{lmsans10-regular}[Extension=.otf,BoldFont=lmsans10-bold,ItalicFont=lmsans10-oblique,BoldItalicFont=lmsans10-boldoblique]
+  \setmonofont{lmmono10-regular}[Extension=.otf]
+\fi
 \usepackage{babel}
 \babelprovide[import,main]{french}
 \usepackage[a4paper,margin=1.9cm,top=1.7cm,bottom=1.8cm]{geometry}
@@ -14,6 +21,9 @@
 \usepackage{enumitem}
 \usepackage{fancyhdr,lastpage}
 \usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{caption}
+\captionsetup{font={small,color=Muted},labelfont={bf,color=Forest},skip=3pt}
 \usepackage{hyperref}
 \definecolor{Forest}{HTML}{174F43}
 \definecolor{Sage}{HTML}{EDF2E6}
@@ -122,6 +132,12 @@ On déduit
 \]
 Le facteur de queue est fixé à 1 : $C_{i,n}$ est supposé représenter le terme du développement retenu. Aucun développement supplémentaire au-delà de cet âge n'est estimé dans cette version.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_triangle.pdf}
+\caption{Triangle du cours. À gauche, chaque facteur de passage observé (points) et le facteur pondéré par volume $\widehat f_j$ (trait) ; la dispersion augmente aux âges élevés, où peu d'origines contribuent. À droite, cumuls observés (trait plein) et projetés (pointillés) jusqu'à l'ultime $\widehat U_i$.}\label{fig:triangle}
+\end{figure}
+
 \subsection*{L'interprétation dépend de la nature du triangle}
 \begin{itemize}
 \item \textbf{Paiements :} ultime estimé moins déjà payé = montant estimé restant à payer.
@@ -133,7 +149,6 @@ Le facteur de queue est fixé à 1 : $C_{i,n}$ est supposé représenter le term
 \textbf{Contrôles métier.} Le fichier CSV contient \texttt{origin,D1,D2,...,Dn}. Les années numériques sont croissantes et consécutives. Les observations restent intactes ; le triangle projeté est un autre tableau. Nature, unité et date d'évaluation sont incluses dans l'export et dans l'empreinte du dossier.
 \end{keybox}
 
-\newpage
 \section{Mack : mesurer l'erreur de prédiction}
 \subsection*{Hypothèses de moments}
 Les origines sont supposées indépendantes. Conditionnellement à l'historique disponible :
@@ -173,6 +188,12 @@ Par conséquent,
 \]
 La RMSEP est la racine carrée de la MSEP. Les covariances sont incluses dans le total ; les écarts-types annuels ne s'additionnent pas.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_mack.pdf}
+\caption{Erreur de prédiction de Mack sur le cours. À gauche, provision par origine et RMSEP annuelle (les écarts-types annuels ne s'additionnent pas). À droite, part de la MSEP due au processus et à l'estimation des facteurs.}\label{fig:mack}
+\end{figure}
+
 \smallnote{Sur le cours : écart-type de processus agrégé $\simeq1\,878\,290{,}22$ ; écart-type d'estimation agrégé $\simeq1\,568\,531{,}20$. Leurs \emph{variances} s'additionnent pour donner la RMSEP totale $2\,447\,093{,}03$. Une loi normale et un intervalle $R\pm1{,}96\,\RMSEP$ ne sont pas déduits automatiquement de Mack.}
 
 \newpage
@@ -209,6 +230,12 @@ Erreur Monte-Carlo de la moyenne & 41\,661,31 \\
 \bottomrule
 \end{tabular}
 \end{center}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_bootstrap.pdf}
+\caption{Provision totale simulée sur le cours (bootstrap ODP et processus Gamma signé, 5\,000 scénarios, graine 42). La courbe normale construite avec la RMSEP de Mack n'est qu'un repère visuel : aucune loi n'est déduite de Mack.}\label{fig:bootstrap}
+\end{figure}
+
 \begin{limitbox}
 444 scénarios sur 5\,000 contiennent des incréments futurs moyens négatifs ; ils sont conservés par le processus signé. Aucune réserve totale simulée n'est négative. Aucune simulation invalide n'est supprimée. Les quantiles sont ceux de ce modèle jusqu'au terme retenu ; ce ne sont ni des quantiles Mack ni un SCR à un an.
 \end{limitbox}
@@ -252,11 +279,16 @@ CAS/NAIC & 86,77\,\% & 85,88\,\% & 89,53\,\% \\
 \end{center}
 La nouvelle origine et la plus ancienne au-delà de la maturité ajustée sont exclues. Un test vérifie que modifier les observations masquées ne change pas leur propre prédiction.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_backtest.pdf}
+\caption{Rapport observé/prédit des incréments des diagonales masquées, par jeu et par arrêt (100\,\% = prédiction exacte). Le cas CAS/NAIC est systématiquement surestimé ; les autres jeux sont instables d'un arrêt à l'autre.}\label{fig:backtest}
+\end{figure}
+
 \begin{limitbox}
 Sur le cas CAS/NAIC, les ratios inférieurs à 1 indiquent une surestimation des paiements des diagonales masquées. Ces résultats sont publiés tels quels. Trois arrêts sur un triangle ne valident pas l'ultime réel, la queue de distribution ou l'usage sur d'autres portefeuilles.
 \end{limitbox}
 
-\newpage
 \section{Usage métier, reproductibilité et limites}
 \subsection*{Fonctionnalités livrées}
 \begin{itemize}
@@ -267,7 +299,7 @@ Sur le cas CAS/NAIC, les ratios inférieurs à 1 indiquent une surestimation des
 \end{itemize}
 
 \subsection*{Contrôles et références réellement exécutés}
-Le projet comporte \textbf{22 tests réussis} : réconciliation des références, covariance, échelle, préservation des observations, erreurs de format et de géométrie, correction des leviers, reproductibilité, risque de processus, absence de fuite et parcours Streamlit.
+Le projet comporte \textbf{24 tests réussis} : réconciliation des références, covariance, échelle, préservation des observations, erreurs de format et de géométrie, correction des leviers, reproductibilité, risque de processus, provision nulle renvoyée en NaN par la bibliothèque, reproduction des statistiques publiées du bootstrap, absence de fuite et parcours Streamlit.
 
 La comparaison exécutée utilise l'implémentation Python indépendante de la bibliothèque \texttt{chainladder}. Un script R facultatif est fourni avec les mêmes options, mais \textbf{n'a pas été exécuté}, car \texttt{Rscript} est absent de l'environnement de réalisation. Une valeur RAA publiée avec variance finale log-linéaire ne doit pas être comparée sans harmoniser ce choix.
 
@@ -291,3 +323,5 @@ La comparaison exécutée utilise l'implémentation Python indépendante de la b
 \item \href{https://casact.github.io/raw_package/reference/NAIC.html}{CAS/NAIC : documentation des données Schedule P}.
 \end{itemize}
 \end{document}
+
+ewpage
