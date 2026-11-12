@@ -1,0 +1,182 @@
+{
+  "created_utc": "2026-11-12T14:27:12.226361+00:00",
+  "engine_version": "reserving-v1",
+  "triangle_sha256": "567fe60becdc2db511d90cfc9542b5b55a37094f9f057f085650721f4e8e5172",
+  "input": {
+    "name": "Mack — triangle du cours",
+    "origins": [
+      "Année 1",
+      "Année 2",
+      "Année 3",
+      "Année 4",
+      "Année 5",
+      "Année 6",
+      "Année 7",
+      "Année 8",
+      "Année 9",
+      "Année 10"
+    ],
+    "source": "https://nicolasbaradel.fr/enseignement/ressources/R/donneesMACK.txt",
+    "unit": "unités du cours",
+    "nature": "unspecified",
+    "valuation": "non renseignée"
+  },
+  "assumptions": {
+    "tail_factor": 1.0,
+    "final_sigma_method": "Mack minimum approximation",
+    "negative_observed_increments": 0,
+    "factors_below_one": 0,
+    "positive_cumulative_required": true,
+    "independent_origins_assumed": true,
+    "calendar_effects_tested": false,
+    "currency_inflation_adjusted": false,
+    "sample_size_by_factor": [
+      9,
+      8,
+      7,
+      6,
+      5,
+      4,
+      3,
+      2,
+      1
+    ]
+  },
+  "total_reserve": 18680847.767812435,
+  "mack_total_rmsep": 2447093.029339964,
+  "annual_results": [
+    {
+      "origin": "Année 1",
+      "latest": 3901463.0,
+      "ultimate": 3901463.0,
+      "reserve": 0.0,
+      "mack_rmsep": 0.0
+    },
+    {
+      "origin": "Année 2",
+      "latest": 5339085.0,
+      "ultimate": 5433718.8145487895,
+      "reserve": 94633.81454878952,
+      "mack_rmsep": 75535.04075748847
+    },
+    {
+      "origin": "Année 3",
+      "latest": 4909315.0,
+      "ultimate": 5378826.29006424,
+      "reserve": 469511.2900642399,
+      "mack_rmsep": 121698.56164542321
+    },
+    {
+      "origin": "Année 4",
+      "latest": 4588268.0,
+      "ultimate": 5297905.820825461,
+      "reserve": 709637.8208254613,
+      "mack_rmsep": 133548.85301207818
+    },
+    {
+      "origin": "Année 5",
+      "latest": 3873311.0,
+      "ultimate": 4858199.639049737,
+      "reserve": 984888.6390497368,
+      "mack_rmsep": 261406.4493426849
+    },
+    {
+      "origin": "Année 6",
+      "latest": 3691712.0,
+      "ultimate": 5111171.457661661,
+      "reserve": 1419459.4576616613,
+      "mack_rmsep": 411009.7038810532
+    },
+    {
+      "origin": "Année 7",
+      "latest": 3483130.0,
+      "ultimate": 5660770.620135546,
+      "reserve": 2177640.6201355457,
+      "mack_rmsep": 558316.8580711901
+    },
+    {
+      "origin": "Année 8",
+      "latest": 2864494.0,
+      "ultimate": 6784789.537623648,
+      "reserve": 3920295.5376236476,
+      "mack_rmsep": 875326.7820573387
+    },
+    {
+      "origin": "Année 9",
+      "latest": 1363294.0,
+      "ultimate": 5642265.003288767,
+      "reserve": 4278971.003288767,
+      "mack_rmsep": 971256.355843388
+    },
+    {
+      "origin": "Année 10",
+      "latest": 344014.0,
+      "ultimate": 4969823.584614587,
+      "reserve": 4625809.584614587,
+      "mack_rmsep": 1363153.84439518
+    }
+  ],
+  "development_factors": [
+    3.4906065479322863,
+    1.7473322519041339,
+    1.4574128360182361,
+    1.1738517093997867,
+    1.103823532244344,
+    1.0862693644363943,
+    1.0538743555048127,
+    1.0765551783529383,
+    1.017724725219544
+  ],
+  "mack_sigma2": [
+    160280.3274804869,
+    37736.54839988968,
+    41965.213017423994,
+    15182.902680976433,
+    13731.323891978895,
+    8185.771620009628,
+    446.61655010535304,
+    1147.3659684286538,
+    446.61655010535304
+  ],
+  "mack_total_process_msep": 3527974167333.7754,
+  "mack_total_parameter_msep": 2460290126910.467,
+  "validation_status": "demonstrator_reference_checked_not_company_approved",
+  "interpretation": "nature not confirmed: future development only",
+  "bootstrap": {
+    "summary": {
+      "mean": 18840414.379326753,
+      "median": 18652950.340404745,
+      "std": 2945899.6775986115,
+      "q75": 20643098.313402794,
+      "q90": 22609495.334937725,
+      "q95": 24138111.419519037,
+      "q99": 26805701.386944745,
+      "mean_monte_carlo_se": 41661.31277450484,
+      "parameter_only_std": 2777922.904753254
+    },
+    "diagnostics": {
+      "model": "ODP bootstrap, Pearson leverage correction, library signed Gamma process",
+      "leverage_fix": "Explicit zero for saturated h=1; no uninitialized divide output",
+      "library": "chainladder",
+      "version": "0.10.1",
+      "simulations": 5000,
+      "seed": 42,
+      "process_seed": 43,
+      "scale": 52601.32431390975,
+      "includes_process_risk": true,
+      "negative_future_mean_cells": 3996,
+      "negative_mean_simulations": 444,
+      "negative_reserve_simulations": 0,
+      "invalid_simulations_discarded": 0,
+      "warnings": [],
+      "q95_batches": [
+        23857137.49110127,
+        24422364.33908906,
+        24135555.11332142,
+        24280912.428492364
+      ],
+      "tail_factor": 1.0,
+      "is_mack_bootstrap": false
+    }
+  }
+}

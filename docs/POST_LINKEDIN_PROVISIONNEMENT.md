@@ -1,17 +1,15 @@
-# Brouillon LinkedIn — à relire avant publication
+# Brouillon LinkedIn — non publié
 
-Comment vérifier un calcul de provisionnement avant de construire son tableau de bord ?
+J’ai construit un outil de provisionnement en Python, avec une interface Streamlit pour passer du triangle à une estimation expliquée.
 
-J’ai commencé par reproduire un exemple du cours de mathématiques de l’assurance dommages de Nicolas Baradel : projection d’un triangle cumulé par Chain-Ladder, calcul des ultimes et différence avec la dernière diagonale observée.
+La première étape a été de reproduire le montant du cours : 18 680 847,77 unités de développement futur estimé. L’erreur de prédiction de Mack vaut 2 447 093,03 unités, soit environ 13,1 % de cette estimation.
 
-Le recalcul indépendant en Python donne une provision totale de 18 680 847,77 unités, conforme aux 18 680 848 arrondis du support.
+Le moteur a ensuite été comparé à une bibliothèque actuarielle indépendante sur le triangle du cours, RAA, GenIns et un périmètre CAS/NAIC.
 
-Cette étape a aussi révélé un point concret dans le script pédagogique fourni : le triangle projeté est calculé, mais les provisions utilisent ensuite le triangle initial. La séparation entre données observées et projections est donc essentielle.
+Pour explorer l’incertitude, j’ai ajouté un bootstrap ODP avec risque de processus. Sur 5 000 scénarios à graine fixée, le quantile à 95 % vaut 24,138,111.42 unités sur le triangle du cours. Ce résultat dépend des hypothèses du bootstrap, dont une extension Gamma signée explicitement documentée ; ce n’est pas un quantile Mack ni un SCR à un an.
 
-La suite du projet portera sur l’erreur de prédiction de Mack, le bootstrap et les diagnostics. Ces résultats ne sont pas encore validés ; je ne les présente pas comme acquis.
+Les résultats de validation rétrospective restent visibles même lorsqu’ils sont défavorables. L’outil distingue calcul vérifié et hypothèses à valider sur le portefeuille.
 
-Ce premier exemple vérifie un calcul déterministe sur un triangle pédagogique. Il ne démontre pas encore la performance sur un portefeuille réel.
+Code, méthodes, résultats et guide local : https://github.com/kelian19/assurance-provisionnement
 
-Code et plan : https://github.com/kelian19/assurance-provisionnement
-
-#Actuariat #Provisionnement #Assurance #Python
+#Actuariat #Provisionnement #Python #Assurance

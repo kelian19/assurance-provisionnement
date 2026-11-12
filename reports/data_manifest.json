@@ -1,0 +1,29 @@
+{
+  "course": {
+    "url": "https://nicolasbaradel.fr/enseignement/ressources/R/donneesMACK.txt",
+    "sha256": "12b86540aaefc1b9148f1a94fbf68e3dba6d91649dcebc8b7f00eacad7157601",
+    "bytes": 628,
+    "unit": "unités non précisées dans le fichier",
+    "calendar": "non précisé dans le fichier"
+  },
+  "library_samples": {
+    "genins": {
+      "version": "0.10.1",
+      "sha256": "b4e0de67c11ed27d2e29286193ffc707e5dae285525526828a27aecfbf7507da",
+      "source": "https://github.com/casact/chainladder-python/tree/v0.10.1/chainladder/utils/data",
+      "redistributed": false
+    },
+    "raa": {
+      "version": "0.10.1",
+      "sha256": "36c1c35c2fded8ba82a653b5e92e77d1e04638f327519be9e94eb5501813588d",
+      "source": "https://github.com/casact/chainladder-python/tree/v0.10.1/chainladder/utils/data",
+      "redistributed": false
+    },
+    "clrd": {
+      "version": "0.10.1",
+      "sha256": "5785a95d5d24943f601a9c46b83cb313ba5109a374331a71e28a86eb702d9eef",
+      "source": "https://github.com/casact/chainladder-python/tree/v0.10.1/chainladder/utils/data",
+      "redistributed": false
+    }
+  }
+}

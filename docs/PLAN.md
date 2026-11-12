@@ -114,3 +114,11 @@ Angle : « Une provision est une estimation : rendre son incertitude visible ».
 Dépendances proposées : pandas, numpy, scipy, statsmodels, scikit-learn, chainladder, plotly, streamlit, pytest ; vérifier API et versions au développement. Référence R : glm/glmnet, ChainLadder, testthat, renv.
 
 Livrables par dépôt : code modulaire, acquisition des données, analyse reproductible, tests actuariels, application, README, sources/hypothèses, captures et brouillon LinkedIn. Aucun déploiement ni publication LinkedIn à ce stade.
+
+## État réalisé — provisionnement V1
+
+Le projet 2 est désormais implémenté dans ce dépôt : moteur Chain-Ladder/Mack, comparaison à chainladder aux mêmes options, bootstrap ODP avec correction déterministe du levier et processus Gamma signé, contrôles d'entrée, validation par diagonales masquées, exports et interface Streamlit/Plotly locale.
+
+Le montant du cours est reproduit exactement ; GenIns est conservé séparément en raison d'un écart de 4 unités dans une cellule. Les sources et statistiques sont versionnées, les fichiers bruts restent hors Git. La validation R est fournie mais non exécutée faute de Rscript.
+
+Les documents à jour sont README.md, docs/METHODOLOGIE.md et reports/RESULTATS.md. Les indications antérieures de « projet à développer » sont conservées comme historique de cadrage, sans décrire l'état actuel. Schnieper et inflation restent des extensions.

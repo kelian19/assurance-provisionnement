@@ -1,0 +1,182 @@
+{
+  "created_utc": "2026-11-12T14:27:14.357661+00:00",
+  "engine_version": "reserving-v1",
+  "triangle_sha256": "3f9cafd2ce30c4d9512b7912ccadd77566f32d8861f439fd4c01ca2f04adaa74",
+  "input": {
+    "name": "CAS/NAIC — State Farm, auto particuliers",
+    "origins": [
+      "1988",
+      "1989",
+      "1990",
+      "1991",
+      "1992",
+      "1993",
+      "1994",
+      "1995",
+      "1996",
+      "1997"
+    ],
+    "source": "CAS Loss Reserve Database via chainladder 0.10.1, clrd.csv ; un seul groupe, une seule branche",
+    "unit": "unités CAS/NAIC non converties",
+    "nature": "paid",
+    "valuation": "1997-12-31"
+  },
+  "assumptions": {
+    "tail_factor": 1.0,
+    "final_sigma_method": "Mack minimum approximation",
+    "negative_observed_increments": 0,
+    "factors_below_one": 0,
+    "positive_cumulative_required": true,
+    "independent_origins_assumed": true,
+    "calendar_effects_tested": false,
+    "currency_inflation_adjusted": false,
+    "sample_size_by_factor": [
+      9,
+      8,
+      7,
+      6,
+      5,
+      4,
+      3,
+      2,
+      1
+    ]
+  },
+  "total_reserve": 12586821.36338261,
+  "mack_total_rmsep": 550736.2642651892,
+  "annual_results": [
+    {
+      "origin": "1988",
+      "latest": 6815646.0,
+      "ultimate": 6815646.0,
+      "reserve": 0.0,
+      "mack_rmsep": 0.0
+    },
+    {
+      "origin": "1989",
+      "latest": 7712077.0,
+      "ultimate": 7719821.007865251,
+      "reserve": 7744.007865251042,
+      "mack_rmsep": 3992.5415793981983
+    },
+    {
+      "origin": "1990",
+      "latest": 8364955.0,
+      "ultimate": 8396601.115304876,
+      "reserve": 31646.11530487612,
+      "mack_rmsep": 6438.772231369141
+    },
+    {
+      "origin": "1991",
+      "latest": 8215810.0,
+      "ultimate": 8288544.590317783,
+      "reserve": 72734.59031778295,
+      "mack_rmsep": 7184.107278991498
+    },
+    {
+      "origin": "1992",
+      "latest": 8876813.0,
+      "ultimate": 9043728.126398554,
+      "reserve": 166915.12639855407,
+      "mack_rmsep": 11581.889996607144
+    },
+    {
+      "origin": "1993",
+      "latest": 9337099.0,
+      "ultimate": 9702725.775345534,
+      "reserve": 365626.7753455341,
+      "mack_rmsep": 26929.584001665546
+    },
+    {
+      "origin": "1994",
+      "latest": 9640098.0,
+      "ultimate": 10422621.373608517,
+      "reserve": 782523.3736085165,
+      "mack_rmsep": 45938.192190083966
+    },
+    {
+      "origin": "1995",
+      "latest": 9006113.0,
+      "ultimate": 10571470.740404055,
+      "reserve": 1565357.7404040545,
+      "mack_rmsep": 71929.00577218682
+    },
+    {
+      "origin": "1996",
+      "latest": 7486113.0,
+      "ultimate": 10490872.19248765,
+      "reserve": 3004759.1924876496,
+      "mack_rmsep": 146612.71047302042
+    },
+    {
+      "origin": "1997",
+      "latest": 4344144.0,
+      "ultimate": 10933658.44165039,
+      "reserve": 6589514.441650391,
+      "mack_rmsep": 508538.6483836848
+    }
+  ],
+  "development_factors": [
+    1.795998923812587,
+    1.1938704351052822,
+    1.0856816760865502,
+    1.0404320422468851,
+    1.0199793202395928,
+    1.0098631752871186,
+    1.0050507170173093,
+    1.002776250072165,
+    1.001004140371686
+  ],
+  "mack_sigma2": [
+    24397.12966880748,
+    1382.4541569655764,
+    244.72353529815135,
+    104.79966843011405,
+    48.059126563757445,
+    6.500384536119061,
+    0.9691825229421909,
+    1.7629605762502414,
+    0.9691825229421909
+  ],
+  "mack_total_process_msep": 252683711906.02045,
+  "mack_total_parameter_msep": 50626720870.7558,
+  "validation_status": "demonstrator_reference_checked_not_company_approved",
+  "interpretation": "remaining payments",
+  "bootstrap": {
+    "summary": {
+      "mean": 12593761.861036502,
+      "median": 12590429.651969735,
+      "std": 495704.0624918128,
+      "q75": 12922151.9153892,
+      "q90": 13229792.40298085,
+      "q95": 13420775.662687166,
+      "q99": 13764890.417091988,
+      "mean_monte_carlo_se": 7010.3140809936185,
+      "parameter_only_std": 412138.1756846893
+    },
+    "diagnostics": {
+      "model": "ODP bootstrap, Pearson leverage correction, library signed Gamma process",
+      "leverage_fix": "Explicit zero for saturated h=1; no uninitialized divide output",
+      "library": "chainladder",
+      "version": "0.10.1",
+      "simulations": 5000,
+      "seed": 42,
+      "process_seed": 43,
+      "scale": 6056.392202249295,
+      "includes_process_risk": true,
+      "negative_future_mean_cells": 6517,
+      "negative_mean_simulations": 721,
+      "negative_reserve_simulations": 0,
+      "invalid_simulations_discarded": 0,
+      "warnings": [],
+      "q95_batches": [
+        13391194.564120596,
+        13430391.99106618,
+        13400398.821111098,
+        13443118.122969776
+      ],
+      "tail_factor": 1.0,
+      "is_mack_bootstrap": false
+    }
+  }
+}

@@ -1,0 +1,274 @@
+{
+  "engine_version": "reserving-v1",
+  "python": "3.12.14",
+  "versions": {
+    "numpy": "2.3.5",
+    "pandas": "3.1.1",
+    "scipy": "1.17.0",
+    "chainladder": "0.10.1",
+    "streamlit": "1.67.0",
+    "plotly": "7.1.0",
+    "pytest": "9.2.0",
+    "scikit-learn": "1.8.0",
+    "sparse": "0.19.3",
+    "numba": "0.68.1"
+  },
+  "deterministic_comparisons": [
+    {
+      "dataset": "course",
+      "reserve": 18680847.767812435,
+      "mack_rmsep": 2447093.029339964,
+      "library_reserve": 18680847.767812446,
+      "library_rmsep": 2447093.029339965,
+      "absolute_reserve_gap": 1.1175870895385742e-08,
+      "absolute_rmsep_gap": 9.313225746154785e-10
+    },
+    {
+      "dataset": "genins",
+      "reserve": 18680855.6119243,
+      "mack_rmsep": 2447094.8608346647,
+      "library_reserve": 18680855.611924313,
+      "library_rmsep": 2447094.860834665,
+      "absolute_reserve_gap": 1.1175870895385742e-08,
+      "absolute_rmsep_gap": 4.656612873077393e-10
+    },
+    {
+      "dataset": "raa",
+      "reserve": 52135.228261210155,
+      "mack_rmsep": 26909.01115564366,
+      "library_reserve": 52135.228261210155,
+      "library_rmsep": 26909.01115564366,
+      "absolute_reserve_gap": 0.0,
+      "absolute_rmsep_gap": 0.0
+    },
+    {
+      "dataset": "cas",
+      "reserve": 12586821.36338261,
+      "mack_rmsep": 550736.2642651892,
+      "library_reserve": 12586821.363382615,
+      "library_rmsep": 550736.2642651893,
+      "absolute_reserve_gap": 5.587935447692871e-09,
+      "absolute_rmsep_gap": 1.1641532182693481e-10
+    }
+  ],
+  "course_reference": 18680847.767812435,
+  "course_reference_matched": true,
+  "backtests": {
+    "course": [
+      {
+        "hidden_diagonals": 1,
+        "cells": 8,
+        "observed_increment": 5581579.0,
+        "predicted_increment": 4841123.600136658,
+        "mean_error": -92556.92498291773,
+        "mae": 164741.11841642729,
+        "observed_predicted": 1.152951145441203
+      },
+      {
+        "hidden_diagonals": 2,
+        "cells": 7,
+        "observed_increment": 4617151.0,
+        "predicted_increment": 4202731.048424559,
+        "mean_error": -59202.850225063106,
+        "mae": 141645.67385165984,
+        "observed_predicted": 1.0986072976834411
+      },
+      {
+        "hidden_diagonals": 3,
+        "cells": 6,
+        "observed_increment": 3411826.0,
+        "predicted_increment": 4564053.33690644,
+        "mean_error": 192037.88948440654,
+        "mae": 307436.4769145847,
+        "observed_predicted": 0.7475429729120058
+      }
+    ],
+    "genins": [
+      {
+        "hidden_diagonals": 1,
+        "cells": 8,
+        "observed_increment": 5581583.0,
+        "predicted_increment": 4841123.600136658,
+        "mean_error": -92557.42498291773,
+        "mae": 164741.61841642729,
+        "observed_predicted": 1.15295197169567
+      },
+      {
+        "hidden_diagonals": 2,
+        "cells": 7,
+        "observed_increment": 4617151.0,
+        "predicted_increment": 4202731.048424559,
+        "mean_error": -59202.850225063106,
+        "mae": 141645.67385165984,
+        "observed_predicted": 1.0986072976834411
+      },
+      {
+        "hidden_diagonals": 3,
+        "cells": 6,
+        "observed_increment": 3411826.0,
+        "predicted_increment": 4564053.33690644,
+        "mean_error": 192037.88948440654,
+        "mae": 307436.4769145847,
+        "observed_predicted": 0.7475429729120058
+      }
+    ],
+    "raa": [
+      {
+        "hidden_diagonals": 1,
+        "cells": 8,
+        "observed_increment": 15059.0,
+        "predicted_increment": 22360.314882477818,
+        "mean_error": 912.6643603097277,
+        "mae": 1754.504788596199,
+        "observed_predicted": 0.6734699434756468
+      },
+      {
+        "hidden_diagonals": 2,
+        "cells": 7,
+        "observed_increment": 21521.0,
+        "predicted_increment": 17935.43955305191,
+        "mean_error": -512.2229209925845,
+        "mae": 1810.0931545636938,
+        "observed_predicted": 1.1999148354486784
+      },
+      {
+        "hidden_diagonals": 3,
+        "cells": 6,
+        "observed_increment": 20588.0,
+        "predicted_increment": 17682.922211546793,
+        "mean_error": -484.17963140886803,
+        "mae": 1752.8857360284467,
+        "observed_predicted": 1.1642872005938145
+      }
+    ],
+    "cas": [
+      {
+        "hidden_diagonals": 1,
+        "cells": 8,
+        "observed_increment": 5728203.0,
+        "predicted_increment": 6601807.799938522,
+        "mean_error": 109200.59999231528,
+        "mae": 109200.59999231528,
+        "observed_predicted": 0.8676718822461542
+      },
+      {
+        "hidden_diagonals": 2,
+        "cells": 7,
+        "observed_increment": 5733936.0,
+        "predicted_increment": 6676984.793167329,
+        "mean_error": 134721.25616676133,
+        "mae": 134721.25616676133,
+        "observed_predicted": 0.8587612788736066
+      },
+      {
+        "hidden_diagonals": 3,
+        "cells": 6,
+        "observed_increment": 5759195.0,
+        "predicted_increment": 6432477.378450715,
+        "mean_error": 112213.72974178584,
+        "mae": 112213.72974178584,
+        "observed_predicted": 0.8953307817752673
+      }
+    ]
+  },
+  "bootstrap": {
+    "course": {
+      "summary": {
+        "mean": 18840414.379326753,
+        "median": 18652950.340404745,
+        "std": 2945899.6775986115,
+        "q75": 20643098.313402794,
+        "q90": 22609495.334937725,
+        "q95": 24138111.419519037,
+        "q99": 26805701.386944745,
+        "mean_monte_carlo_se": 41661.31277450484,
+        "parameter_only_std": 2777922.904753254
+      },
+      "diagnostics": {
+        "model": "ODP bootstrap, Pearson leverage correction, library signed Gamma process",
+        "leverage_fix": "Explicit zero for saturated h=1; no uninitialized divide output",
+        "library": "chainladder",
+        "version": "0.10.1",
+        "simulations": 5000,
+        "seed": 42,
+        "process_seed": 43,
+        "scale": 52601.32431390975,
+        "includes_process_risk": true,
+        "negative_future_mean_cells": 3996,
+        "negative_mean_simulations": 444,
+        "negative_reserve_simulations": 0,
+        "invalid_simulations_discarded": 0,
+        "warnings": [],
+        "q95_batches": [
+          23857137.49110127,
+          24422364.33908906,
+          24135555.11332142,
+          24280912.428492364
+        ],
+        "tail_factor": 1.0,
+        "is_mack_bootstrap": false
+      }
+    },
+    "cas": {
+      "summary": {
+        "mean": 12593761.861036502,
+        "median": 12590429.651969735,
+        "std": 495704.0624918128,
+        "q75": 12922151.9153892,
+        "q90": 13229792.40298085,
+        "q95": 13420775.662687166,
+        "q99": 13764890.417091988,
+        "mean_monte_carlo_se": 7010.3140809936185,
+        "parameter_only_std": 412138.1756846893
+      },
+      "diagnostics": {
+        "model": "ODP bootstrap, Pearson leverage correction, library signed Gamma process",
+        "leverage_fix": "Explicit zero for saturated h=1; no uninitialized divide output",
+        "library": "chainladder",
+        "version": "0.10.1",
+        "simulations": 5000,
+        "seed": 42,
+        "process_seed": 43,
+        "scale": 6056.392202249295,
+        "includes_process_risk": true,
+        "negative_future_mean_cells": 6517,
+        "negative_mean_simulations": 721,
+        "negative_reserve_simulations": 0,
+        "invalid_simulations_discarded": 0,
+        "warnings": [],
+        "q95_batches": [
+          13391194.564120596,
+          13430391.99106618,
+          13400398.821111098,
+          13443118.122969776
+        ],
+        "tail_factor": 1.0,
+        "is_mack_bootstrap": false
+      }
+    }
+  },
+  "reference_configuration": {
+    "average": "volume",
+    "sigma_interpolation": "mack",
+    "tail": 1.0,
+    "reference_library": "chainladder",
+    "reference_version": "0.10.1"
+  },
+  "data_difference": {
+    "course_origin_index_7_development_index_2": 2864494,
+    "genins_same_cell": 2864498,
+    "datasets_kept_distinct": true
+  },
+  "R_reference_executed": false,
+  "R_reference_reason": "Rscript absent in execution environment; optional R validation script supplied",
+  "limits": [
+    "Fixed tail factor 1",
+    "No inflation or discounting",
+    "No one-year capital interpretation",
+    "Only three known calendar diagonals, not validation of ultimate tails",
+    "Bootstrap uses signed Gamma library extension for negative fitted future increments",
+    "Deterministic h=1 correction supplied to avoid undefined memory in chainladder 0.10.1",
+    "Units of source files preserved, not automatically interpreted as EUR or USD"
+  ],
+  "publication": "local only; no Site registration or hosting deployment"
+}

@@ -7,3 +7,5 @@ data/processed/
 *.rds
 .Rhistory
 .RData
+reports/scenarios_*.csv
+.streamlit/secrets.toml
