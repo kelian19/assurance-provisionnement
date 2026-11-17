@@ -86,7 +86,19 @@ Cette validation teste le développement à une diagonale, pas l'ultime réel ni
 ## Limites et extensions
 Les tests vérifient les calculs et leur réconciliation ; ils ne démontrent pas que le portefeuille respecte les hypothèses. Une utilisation en compagnie exige une revue des cadences, des segments, de l'inflation, des changements de gestion, des données manquantes et de la queue. Il n'y a ni actualisation, ni inflation modélisée, ni risque de modèle exhaustif, ni SCR calculé.
 
-Schnieper nécessite de vrais triangles de nouveaux sinistres et de révisions, plus les expositions ; le triangle C seul ne suffit pas à identifier N et D. L'inflation devrait être appliquée aux incréments par année calendaire, avec une base d'indice et des hypothèses explicites. Ces deux modules restent des extensions.
+## Schnieper (livré)
+
+Référence : cours de N. Baradel §5 (modèle, estimateurs, variance) et §6.4.1 (bootstrap), d'après Schnieper (1991).
+
+- **Modèle.** C[i,j+1] = C[i,j] + N[i,j+1] − D[i,j+1], avec E[N|passé] = λⱼEᵢ, Var = σⱼ²Eᵢ, E[D|passé] = δⱼC, Var = τⱼ²C. D > 0 est une baisse de charge. Un triangle C seul ne permet pas d'identifier N et D : le modèle exige N, D et l'exposition E.
+- **Estimateurs.** λ̂ⱼ = ΣN/ΣE ; δ̂ⱼ = ΣD/ΣC ; σ̂ⱼ², τ̂ⱼ² avec dénominateurs n−j et n−j−1 ; σ̂ₙ² = τ̂ₙ₋₁² = 0 par convention du cours, non testée. Projection Ĉ[i,j] = λ̂ⱼEᵢ + (1−δ̂ⱼ₋₁)Ĉ[i,j−1].
+- **Décomposition.** Vrais IBNR = Σ λ̂ⱼEᵢ futurs ; IBNER = −Σ δ̂ⱼ₋₁Ĉ[i,j−1] futurs ; leur somme est la provision (testé).
+- **Variance analytique.** Lemme 5.13 : Var(C[i,j]|F) = σⱼ²Eᵢ + τⱼ₋₁²E(C[i,j−1]) + (1−δⱼ₋₁)²Var(C[i,j−1]), sous Cov(N,D)=0. Processus seul, paramètres supposés connus ; vérifiée contre la forme développée du lemme et contre une simulation gaussienne.
+- **Bootstrap.** Résidus de Pearson ajustés des degrés de liberté puis centrés, tirés séparément pour N et D ; reconstruction du passé, réestimation de λ, δ, σ, τ, puis projection stochastique avec plancher à 0 (`pmax` du cours). Les scénarios planchés sont comptés, jamais écartés ; le plancher biaise légèrement la moyenne à la hausse.
+- **Validation.** Toutes les valeurs imprimées de l'exemple 5.4 sont reproduites (λ, δ, σ, τ, ultimes, provisions, 283,9 ; Mack 464,2) ainsi que l'exemple 5.6 (7,97). Invariance d'unité (remarque 5.10) testée. La Table 6 du cours n'est pas reproduite : elle se rattache à un jeu ambigu.
+- **Limites.** Un seul triangle de 7 années, aucune validation rétrospective, pas de facteur de queue, pas d'inflation. L'écart avec Mack (283,9 contre 464,2) est un risque de modèle.
+
+L'inflation devrait être appliquée aux incréments par année calendaire, avec une base d'indice et des hypothèses explicites ; elle reste une extension.
 
 Sources méthodologiques :
 - https://mages.github.io/ChainLadder/articles/ChainLadder.html

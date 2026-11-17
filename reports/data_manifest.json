@@ -6,6 +6,23 @@
     "unit": "unités non précisées dans le fichier",
     "calendar": "non précisé dans le fichier"
   },
+  "schnieper": {
+    "N": {
+      "url": "https://nicolasbaradel.fr/enseignement/ressources/R/donneesSCHNIEPER_N.txt",
+      "sha256": "ec1205efbde2ab9d6b97ef197959c6df3c8a9c24417551f7572a3025fc113f7d",
+      "bytes": 217
+    },
+    "D": {
+      "url": "https://nicolasbaradel.fr/enseignement/ressources/R/donneesSCHNIEPER_D.txt",
+      "sha256": "d69a8c165ad3241673cd33615b26d6b1e06b97533d92d3b1697e47f46936759f",
+      "bytes": 197
+    },
+    "E": {
+      "url": "https://nicolasbaradel.fr/enseignement/ressources/R/donneesSCHNIEPER_E.txt",
+      "sha256": "800340309a09c231b1c5e9ff118400b16031d94b030e04a8b64067fb653708a0",
+      "bytes": 47
+    }
+  },
   "library_samples": {
     "genins": {
       "version": "0.10.1",

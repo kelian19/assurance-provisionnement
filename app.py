@@ -7,10 +7,11 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-from reserving.data import DATASETS,load_dataset
+from reserving.data import DATASETS,load_dataset,load_schnieper
 from reserving.triangle import read_csv,to_incremental,observed_mask
 from reserving.mack import mack
 from reserving.bootstrap import odp_bootstrap
+from reserving.schnieper import schnieper,schnieper_bootstrap
 from reserving.backtest import diagonal_backtest,backtest_summary
 from reserving.export import triangle_fingerprint,report_json
 
@@ -74,7 +75,7 @@ st.caption('Montants dans l’unité indiquée ; aucune conversion automatique e
 if result.diagnostics['negative_observed_increments']:
  st.warning(f"{result.diagnostics['negative_observed_increments']} incrément(s) négatif(s) : les reprises restent dans Mack. Le bootstrap ODP de cette V1 sera indisponible.")
 
-t_data,t_est,t_unc,t_val,t_math=st.tabs(['Données & triangle','Estimation','Incertitude','Validation','Méthode & maths'])
+t_data,t_est,t_unc,t_sch,t_val,t_math=st.tabs(['Données & triangle','Estimation','Incertitude','Schnieper','Validation','Méthode & maths'])
 with t_data:
  st.subheader('Des observations aux projections')
  mode=st.radio('Triangle à afficher',['Observé','Projeté','Incréments observés'],horizontal=True,key='triangle_view')
@@ -127,6 +128,56 @@ with t_unc:
   with st.expander('Diagnostics et stabilité Monte-Carlo'):
    st.json(bootstrap.diagnostics);st.write('Les quatre quantiles Q95 par lots sont un diagnostic de stabilité, pas un intervalle de confiance.')
   st.download_button('Exporter les scénarios',pd.DataFrame({'scenario':np.arange(1,len(bootstrap.predictive_reserves)+1),'reserve':bootstrap.predictive_reserves}).to_csv(index=False),file_name='scenarios_bootstrap.csv',mime='text/csv')
+with t_sch:
+ st.subheader('Séparer les vrais IBNR des révisions de sinistres connus')
+ st.write('Le modèle de Schnieper décompose le développement en deux flux : les **nouveaux sinistres** N, proportionnels à une exposition (vrais IBNR), et les **révisions** D des sinistres déjà connus, proportionnelles à la charge actuelle (IBNER). Il exige donc trois entrées — N, D et l’exposition E — qu’un triangle cumulé seul ne permet pas de reconstituer. Cet onglet utilise l’exemple 5.4 du cours (indépendant du triangle choisi à gauche).')
+ try:sch_data=load_schnieper();sch=schnieper(sch_data);mack_same=mack(sch_data.cumulative)
+ except (ValueError,FileNotFoundError) as error:
+  st.info(f'Données Schnieper indisponibles : {error}');sch=None
+ if sch is not None:
+  sm=st.columns(4)
+  sm[0].metric('Provision Schnieper',fmt(sch.total_reserve));sm[1].metric('Mack, même triangle cumulé',fmt(mack_same.total_reserve))
+  sm[2].metric('dont vrais IBNR (nouveaux sinistres)',fmt(sch.ibnr.sum()));sm[3].metric('dont IBNER (révisions)',fmt(sch.ibner.sum()))
+  st.caption('Un IBNER négatif signifie que les révisions observées sont en moyenne des baisses de charge. Schnieper et Mack reposent sur des hypothèses différentes (exposition connue contre proportionnalité pure) : l’écart entre les deux est une mesure du risque de modèle, pas une erreur de calcul.')
+  sch_summary=sch.summary(sch_data)
+  fig=go.Figure([go.Bar(x=sch_summary.origin,y=sch_summary.true_ibnr,name='Vrais IBNR',marker_color='#42745d'),go.Bar(x=sch_summary.origin,y=sch_summary.ibner,name='IBNER (révisions)',marker_color='#b38b4f')])
+  fig.update_layout(barmode='relative',paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',xaxis_title='Année de survenance',yaxis_title='Développement futur estimé',legend={'orientation':'h'})
+  st.plotly_chart(fig,width='stretch');st.dataframe(sch_summary,width='stretch',hide_index=True)
+  st.subheader('Paramètres estimés')
+  st.dataframe(sch.parameters(),width='stretch',hide_index=True)
+  st.caption('λ_j : nouveaux sinistres par unité d’exposition ; δ_j : taux de révision de la charge connue (négatif = hausse) ; σ²_j, τ²_j : variances associées. Par convention du cours, σ²_n = τ²_{n−1} = 0 faute d’observations : les années dont le seul développement restant est la dernière colonne ont donc une variance de processus nulle, ce qui sous-estime leur risque.')
+  sp=st.columns(2);sp[0].metric('Écart-type de processus (paramètres supposés connus)',fmt(sch.total_process_std));sp[1].metric('Écart-type / estimation',f'{100*sch.total_process_std/sch.total_reserve:.1f} %')
+  st.caption('Variance analytique du lemme 5.13 du cours : risque de processus seul. L’erreur d’estimation des paramètres n’est pas incluse ; elle l’est dans le bootstrap ci-dessous.')
+  with st.expander('Triangles N, D et cumul C, exposition E'):
+   cols_names=[f'D{j+1}' for j in range(sch_data.n)]
+   for label,matrix in (('Nouveaux sinistres N',sch_data.new_claims),('Révisions D',sch_data.revisions),('Cumul C = ΣN − ΣD',sch.cumulative)):
+    st.markdown(f'**{label}**');st.dataframe(pd.DataFrame(matrix,index=sch_data.origins,columns=cols_names),width='stretch')
+   st.markdown('**Exposition E**');st.dataframe(pd.DataFrame({'exposition':sch_data.exposure},index=sch_data.origins),width='stretch')
+   st.caption(f'Source : {sch_data.source}. Données du cours, unités non précisées.')
+  st.subheader('Distribution par bootstrap de résidus')
+  st.write('Bootstrap non paramétrique du cours (§6.4.1) : résidus de Pearson ajustés et centrés des deux flux, reconstruction du passé pour réestimer les paramètres, puis projection stochastique du futur avec plancher à zéro. Contrairement à l’ODP de l’onglet Incertitude, il s’agit bien du bootstrap du modèle de Schnieper.')
+  with st.form('schnieper_bootstrap_controls'):
+   c1,c2=st.columns(2);sch_sims=c1.selectbox('Nombre de simulations',[1000,5000,10000,20000],index=1,key='schnieper_simulations');sch_seed=c2.number_input('Graine de simulation',min_value=1,max_value=2**32-2,value=42,step=1,key='schnieper_seed')
+   sch_run=st.form_submit_button('Simuler (Schnieper)',type='primary',key='run_schnieper_bootstrap')
+  if sch_run:
+   try:
+    with st.spinner('Reconstruction du passé et projection du futur…'):st.session_state['schnieper_bootstrap_result']=schnieper_bootstrap(sch_data,simulations=int(sch_sims),seed=int(sch_seed))
+   except (ValueError,ArithmeticError) as error:st.error(str(error));st.session_state.pop('schnieper_bootstrap_result',None)
+  sb=st.session_state.get('schnieper_bootstrap_result')
+  if sb is None:st.info('Lancez une simulation pour afficher la distribution. Aucun résultat aléatoire n’est prérempli.')
+  else:
+   q=sb.summary();qc=st.columns(4)
+   for col,label,key in zip(qc,['Moyenne (Schnieper)','Médiane (Schnieper)','Q95 (Schnieper)','Q99 (Schnieper)'],['mean','median','q95','q99']):col.metric(label,fmt(q[key]))
+   fig=go.Figure(go.Histogram(x=sb.predictive_reserves,nbinsx=60,marker_color='#66875c',opacity=.85))
+   fig.add_vline(x=sch.total_reserve,line_dash='dash',line_color='#174f43',annotation_text='Estimation Schnieper')
+   fig.update_layout(xaxis_title='Développement futur simulé',yaxis_title='Nombre de scénarios',paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
+   st.plotly_chart(fig,width='stretch')
+   d=sb.diagnostics
+   st.caption(f"Écart-type : {fmt(q['std'])} (paramètres seuls : {fmt(q['parameter_only_std'])}) · erreur Monte-Carlo de la moyenne : {fmt(q['mean_monte_carlo_se'])} · graine {d['seed']} · {d['simulations']} simulations.")
+   st.caption(f"{100*d['floored_rate']:.2f} % des simulations contiennent au moins un cumul négatif ramené à zéro (plancher du cours) ; ces scénarios sont conservés et biaisent légèrement la moyenne à la hausse. Quantiles non interprétables comme un SCR à un an.")
+   with st.expander('Diagnostics'):st.json(d)
+   st.download_button('Exporter les scénarios Schnieper',pd.DataFrame({'scenario':np.arange(1,len(sb.predictive_reserves)+1),'reserve':sb.predictive_reserves}).to_csv(index=False),file_name='scenarios_schnieper.csv',mime='text/csv')
+  st.download_button('Exporter les résultats Schnieper par année',sch_summary.to_csv(index=False),file_name='schnieper_par_annee.csv',mime='text/csv')
 with t_val:
  st.subheader('Validation sur diagonales masquées')
  backtest=diagonal_backtest(triangle.cumulative);bt=backtest_summary(backtest)
@@ -153,7 +204,10 @@ with t_math:
  st.latex(r'\widehat{\mathrm{MSEP}}(\widehat R_i)=\widehat C_{i,n}^{\,2}\sum_{j=k_i}^{n-1}\frac{\widehat\sigma_j^2}{\widehat f_j^2}\left(\frac{1}{\widehat C_{i,j}}+\frac{1}{\sum_l C_{l,j}}\right)')
  st.latex(r'\mathrm{MSEP}_{total}=\sum_i\mathrm{MSEP}_i+2\sum_{i<k}\widehat{\mathrm{Cov}}(R_i,R_k)')
  st.write('Bootstrap ODP : les montants incrémentaux sont représentés par une moyenne ligne × colonne, avec variance proportionnelle à cette moyenne. Les résidus ajustés sont rééchantillonnés ; les paramètres sont réestimés et le risque de processus est ajouté. La bibliothèque conserve les scénarios signés plutôt que de les tronquer silencieusement.')
- st.markdown('Schnieper et inflation restent des extensions. [Méthodologie complète et sources](https://github.com/kelian19/assurance-provisionnement/blob/main/docs/METHODOLOGIE.md).')
+ st.markdown('**Schnieper** (onglet dédié) :')
+ st.latex(r'C_{i,j+1}=C_{i,j}+N_{i,j+1}-D_{i,j+1},\quad \mathbb{E}[N_{i,j}\mid\mathcal{F}]=\lambda_jE_i,\quad \mathbb{E}[D_{i,j+1}\mid\mathcal{F}]=\delta_jC_{i,j}')
+ st.latex(r'\widehat\lambda_j=\frac{\sum_i N_{i,j}}{\sum_i E_i},\quad \widehat\delta_j=\frac{\sum_i D_{i,j+1}}{\sum_i C_{i,j}},\quad \widehat C_{i,j}=\widehat\lambda_jE_i+(1-\widehat\delta_{j-1})\widehat C_{i,j-1}')
+ st.write('Les vrais IBNR sont la somme des λ̂_j·E_i futurs ; l’IBNER est la somme des −δ̂_{j−1}·Ĉ_{i,j−1} futurs. L’inflation reste une extension. [Méthodologie complète et sources](https://github.com/kelian19/assurance-provisionnement/blob/main/docs/METHODOLOGIE.md).')
 
 st.divider()
 # Refresh bootstrap from session after a submitted form, keeping exports tied to the current triangle.

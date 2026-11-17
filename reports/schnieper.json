@@ -1,0 +1,197 @@
+{
+  "engine": "reserving-v1 + schnieper",
+  "source": "https://nicolasbaradel.fr/enseignement/ressources/R/donneesSCHNIEPER_{N,D,E}.txt",
+  "simulations": 5000,
+  "seed": 42,
+  "parameters": {
+    "lambda": [
+      0.00045029536476642624,
+      0.001059158960571534,
+      0.0013962961970358854,
+      0.0011500289771080845,
+      0.001180946342236665,
+      0.000491817548746518,
+      0.0004988262910798121
+    ],
+    "delta": [
+      -0.35947712418300665,
+      0.07188353048225661,
+      -0.04755700325732899,
+      -0.05355129650507328,
+      0.07031828275351591,
+      0.032509752925877766
+    ],
+    "sigma2": [
+      0.0028951725340920754,
+      0.005433024670863417,
+      0.011850891283445096,
+      0.006314077491530468,
+      0.0031312768821156467,
+      0.003301555022522871,
+      0.0
+    ],
+    "tau2": [
+      0.15008216088034412,
+      1.6094077401173799,
+      1.3848695814561853,
+      11.973820871478988,
+      0.09204577247285517,
+      0.0
+    ]
+  },
+  "by_origin": {
+    "latest": [
+      79.49999999999999,
+      60.0,
+      96.5,
+      46.9,
+      52.7,
+      29.4,
+      19.1
+    ],
+    "ultimate": [
+      79.49999999999999,
+      64.4104476882971,
+      101.29568917266823,
+      79.81380741169144,
+      113.00336221841263,
+      106.58838510298392,
+      123.42604167678071
+    ],
+    "reserve": [
+      0.0,
+      4.410447688297097,
+      4.795689172668233,
+      32.913807411691444,
+      60.30336221841263,
+      77.18838510298391,
+      104.3260416767807
+    ],
+    "true_ibnr": [
+      0.0,
+      6.361032863849764,
+      14.735827117416662,
+      37.70966351152391,
+      64.47262787951065,
+      83.11551483029811,
+      104.7325802888774
+    ],
+    "ibner": [
+      0.0,
+      -1.950585175552666,
+      -9.940137944748425,
+      -4.795856099832461,
+      -4.169265661098019,
+      -5.927129727314181,
+      -0.4065386120966932
+    ],
+    "process_std": [
+      0.0,
+      0.0,
+      7.367744607830593,
+      23.62212282270577,
+      32.32315012160193,
+      35.31567026325475,
+      39.396980473799836
+    ],
+    "mack_reserve": [
+      0.0,
+      2.028608582574762,
+      4.591863273267677,
+      17.242616291087977,
+      52.618662836112264,
+      80.83843019928528,
+      306.92338106478644
+    ]
+  },
+  "totals": {
+    "reserve": 283.93773327083403,
+    "true_ibnr": 311.1272464914765,
+    "ibner": -27.189513220642446,
+    "process_std": 66.75622081601631,
+    "mack_reserve": 464.24356224711437
+  },
+  "bootstrap": {
+    "summary": {
+      "mean": 283.6570620745421,
+      "median": 280.09123005108245,
+      "std": 109.04247950697784,
+      "q75": 357.5700377222837,
+      "q90": 423.9548836612705,
+      "q95": 464.01448252061107,
+      "q99": 549.7883786132778,
+      "q995": 583.1199159633609,
+      "mean_monte_carlo_se": 1.5420935339355835,
+      "parameter_only_std": 84.15125336510629
+    },
+    "diagnostics": {
+      "model": "Schnieper — bootstrap non paramétrique de résidus de Pearson (cours §6.4.1)",
+      "simulations": 5000,
+      "seed": 42,
+      "floored_simulations": 93,
+      "floored_rate": 0.0186,
+      "floor": "max(·,0) sur chaque C simulé, comme pmax du cours",
+      "residuals_new_claims": 27,
+      "residuals_revisions": 20,
+      "central_reserve": 283.93773327083403,
+      "invalid_simulations_discarded": 0,
+      "negative_reserve_simulations": 6,
+      "q95_batches": [
+        462.47507143377874,
+        470.07208617635,
+        464.9914400454416,
+        458.1509370042936
+      ],
+      "tail_factor": 1.0,
+      "is_mack_bootstrap": false,
+      "includes_process_risk": true,
+      "includes_parameter_risk": true
+    }
+  },
+  "reproduction_gaps_vs_printed_course_values": {
+    "lambda": 0.0,
+    "delta": 0.0,
+    "sigma": 0.0,
+    "tau": 0.0,
+    "reserves": 0.0,
+    "total": 0.0,
+    "mack_total": 0.0
+  },
+  "diagnostics": {
+    "model": "Schnieper (cours N. Baradel §5)",
+    "terminal_variances": "σ²_n = τ²_{n-1} = 0 (convention du cours, non testée)",
+    "tail_factor": 1.0,
+    "independent_origins_assumed": true,
+    "cov_N_D_zero_assumed": true,
+    "variance_scope": "processus seul, paramètres supposés connus",
+    "negative_projected_cells": 0,
+    "negative_delta_count": 3,
+    "currency_inflation_adjusted": false,
+    "calendar_effects_tested": false,
+    "sample_size_by_lambda": [
+      7,
+      6,
+      5,
+      4,
+      3,
+      2,
+      1
+    ],
+    "sample_size_by_delta": [
+      6,
+      5,
+      4,
+      3,
+      2,
+      1
+    ]
+  },
+  "limits": [
+    "Variance analytique : processus seul, paramètres supposés connus",
+    "σ²_n et τ²_{n-1} fixés à 0 par convention du cours",
+    "Un seul triangle (7 années), données pédagogiques",
+    "Pas d’inflation, de facteur de queue ni d’actualisation",
+    "Plancher à zéro du bootstrap conservé du cours, avec biais haussier documenté",
+    "Valeurs imprimées de la Table 6 du cours non reproduites : jeu de données ambigu dans le texte du cours"
+  ]
+}

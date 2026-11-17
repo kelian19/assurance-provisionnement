@@ -22,6 +22,7 @@
 \usepackage{fancyhdr,lastpage}
 \usepackage{titlesec}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{caption}
 \captionsetup{font={small,color=Muted},labelfont={bf,color=Forest},skip=3pt}
 \usepackage{hyperref}
@@ -63,14 +64,15 @@
 \fancyfoot[R]{\footnotesize\color{Forest}\thepage\,/\,\pageref{LastPage}}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
-\hypersetup{pdftitle={Clair — Provisionnement : Chain-Ladder, Mack et bootstrap}}
+\hypersetup{pdftitle={Clair — Provisionnement : Chain-Ladder, Mack, bootstrap et Schnieper}}
+\input{tables_schnieper.tex}
 \begin{document}
 {\small\color{Muted}\textbf{NOTE 02}\quad PROVISIONNEMENT ET INCERTITUDE}
 \vspace{5mm}
 
 {\fontsize{27}{31}\selectfont\bfseries\color{Forest}Du triangle observé\par au développement futur.}
 
-{\large Chain-Ladder, erreur de prédiction de Mack,\par bootstrap ODP et validation rétrospective.}
+{\large Chain-Ladder, erreur de prédiction de Mack,\par bootstrap ODP, modèle de Schnieper et validation rétrospective.}
 \vspace{3mm}
 
 \begin{keybox}
@@ -83,6 +85,7 @@
 \item Facteurs Chain-Ladder, ultimes et provisions par origine.
 \item RMSEP de Mack, avec covariance interannuelle dans le total.
 \item Bootstrap ODP de bibliothèque avec correction déterministe des leviers et processus Gamma signé, distinct du bootstrap Mack.
+\item Modèle de Schnieper (nouveaux sinistres $N$, révisions $D$, exposition $E$) : séparation des vrais IBNR et de l'IBNER, variance de processus et bootstrap de résidus, sur l'exemple du cours.
 \item Comparaison à une implémentation externe, diagonales connues masquées, tests actuariels et tests de l'interface.
 \end{itemize}
 
@@ -99,7 +102,7 @@ RMSEP / estimation & \textbf{13,1\,\%} \\
 \smallnote{Montants dans l'unité du fichier du cours, qui ne précise pas une devise. La RMSEP n'est ni une marge à ajouter automatiquement ni une probabilité d'insuffisance.}
 
 \begin{limitbox}
-\textbf{Périmètre de la V1.} Queue fixée à 1, aucune inflation ni actualisation appliquée. La reproduction des références vérifie les calculs ; l'adéquation des hypothèses au portefeuille nécessite une revue actuarielle. Schnieper et inflation restent des extensions.
+\textbf{Périmètre de la V1.} Queue fixée à 1, aucune inflation ni actualisation appliquée. La reproduction des références vérifie les calculs ; l'adéquation des hypothèses au portefeuille nécessite une revue actuarielle. L'inflation reste une extension ; Schnieper est livré à la section~\ref{sec:schnieper}, sur l'unique jeu $N/D/E$ du cours.
 \end{limitbox}
 
 \smallnote{Version moteur : \texttt{reserving-v1}. Référence externe : \texttt{chainladder 0.10.1}, avec pondération par volume et variance finale de Mack. Application livrée pour une démonstration locale ; aucun déploiement public effectué.}
@@ -241,6 +244,102 @@ Erreur Monte-Carlo de la moyenne & 41\,661,31 \\
 \end{limitbox}
 
 \newpage
+\section{Schnieper : vrais IBNR et révisions de sinistres connus}\label{sec:schnieper}
+\subsection*{Un modèle à deux flux}
+Chain-Ladder suppose que tout développement futur est proportionnel au cumul déjà observé. Schnieper sépare deux sources : les sinistres déjà survenus mais encore inconnus de l'assureur, proportionnels à une exposition $E_i$ (vrais IBNR), et les révisions des sinistres connus, proportionnelles à la charge actuelle (IBNER). Avec $N_{i,j}$ le montant des nouveaux sinistres déclarés à l'âge $j$ et $D_{i,j}$ la baisse d'estimation des sinistres connus ($D<0$ pour une hausse) :
+\[
+\boxed{C_{i,1}=N_{i,1},\qquad C_{i,j+1}=C_{i,j}+N_{i,j+1}-D_{i,j+1}.}
+\]
+Deux des trois triangles $(C,N,D)$ déterminent le troisième ; l'exposition $E_i$ est supposée connue.
+
+\subsection*{Hypothèses et estimateurs}
+Les origines sont indépendantes et, conditionnellement au passé $\mathcal F$ :
+\[
+\E[N_{i,j}\mid\mathcal F]=\lambda_jE_i,\quad \Var(N_{i,j}\mid\mathcal F)=\sigma_j^2E_i,\qquad
+\E[D_{i,j+1}\mid\mathcal F]=\delta_jC_{i,j},\quad \Var(D_{i,j+1}\mid\mathcal F)=\tau_j^2C_{i,j}.
+\]
+Les meilleurs estimateurs linéaires sans biais et les variances sont, avec $m_j$ le nombre d'origines observées à l'âge $j$ :
+\[
+\widehat\lambda_j=\frac{\sum_{i\le n-j+1}N_{i,j}}{\sum_{i\le n-j+1}E_i},\qquad
+\widehat\delta_j=\frac{\sum_{i\le n-j}D_{i,j+1}}{\sum_{i\le n-j}C_{i,j}},
+\]
+\[
+\widehat\sigma_j^2=\frac1{n-j}\sum_{i\le n-j+1}E_i\Bigl(\frac{N_{i,j}}{E_i}-\widehat\lambda_j\Bigr)^2,\qquad
+\widehat\tau_j^2=\frac1{n-j-1}\sum_{i\le n-j}C_{i,j}\Bigl(\frac{D_{i,j+1}}{C_{i,j}}-\widehat\delta_j\Bigr)^2 .
+\]
+Par convention du cours, $\widehat\sigma_n^2=\widehat\tau_{n-1}^2=0$ (une seule observation) : c'est une hypothèse, non testée.
+
+\subsection*{Données de l'exemple 5.4 du cours}
+Les triangles ci-dessous sont ceux du cours (unités non précisées) ; $C$ est reconstruit par $C=\sum(N-D)$.
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{4pt}
+\tabSchnieperExposition
+\caption{Expositions $E_i$ de l'exemple 5.4.}
+\end{table}
+\begin{center}\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{minipage}[t]{.48\linewidth}\centering \tabSchnieperN \captionof{table}{Nouveaux sinistres $N_{i,j}$.}\end{minipage}\hfill
+\begin{minipage}[t]{.48\linewidth}\centering \tabSchnieperD \captionof{table}{Révisions $D_{i,j}$ ($<0$ : hausse de charge).}\end{minipage}
+\end{center}
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{4pt}
+\tabSchnieperC
+\caption{Cumul observé $C_{i,j}=\sum_{k\le j}(N_{i,k}-D_{i,k})$.}
+\end{table}
+
+\subsection*{Paramètres estimés}
+\begin{table}[H]\centering\small
+\tabSchnieperParams
+\caption{Paramètres de l'exemple 5.4. $\widehat\lambda_j$ est un taux par unité d'exposition ; $\widehat\delta_j<0$ signifie des révisions en moyenne à la hausse. La dernière ligne de $\widehat\sigma$ et la dernière valeur de $\widehat\tau$ valent 0 par convention.}
+\end{table}
+
+\subsection*{Projection et décomposition de la provision}
+Pour $i+j>n+1$, la projection est récursive, à partir de la diagonale observée :
+\[
+\boxed{\widehat C_{i,j}=\widehat\lambda_jE_i+(1-\widehat\delta_{j-1})\,\widehat C_{i,j-1},\qquad \widehat R_i=\widehat C_{i,n}-C_{i,n+1-i}.}
+\]
+La provision se décompose en vrais IBNR $\sum_j\widehat\lambda_jE_i$ et en IBNER $-\sum_j\widehat\delta_{j-1}\widehat C_{i,j-1}$ (futurs). Exemple pas à pas pour l'origine~4 (valeurs affichées arrondies) :
+\tabSchnieperExemple
+\begin{table}[H]\centering\scriptsize\setlength{\tabcolsep}{4pt}
+\tabSchnieperProjection
+\caption{Cellules futures projetées $\widehat C_{i,j}$ ; les cellules observées sont celles du tableau précédent.}
+\end{table}
+\begin{table}[H]\centering\small
+\tabSchnieperReserves
+\caption{Provision par origine, décomposition et comparaison avec Mack sur le même triangle cumulé. L'écart (283,9 contre 464,2) mesure l'effet de l'hypothèse d'exposition connue : il est un risque de modèle, non une erreur de calcul.}
+\end{table}
+
+\subsection*{Variance de processus}
+Sous $\Cov(N_{i,j},D_{i,j})=0$ et paramètres connus (lemme 5.13 du cours), pour $j>n+1-i$ :
+\[
+\Var(C_{i,j}\mid\mathcal F_n)=\sigma_j^2E_i+\tau_{j-1}^2\,\E[C_{i,j-1}\mid\mathcal F_n]+(1-\delta_{j-1})^2\Var(C_{i,j-1}\mid\mathcal F_n),
+\]
+initialisée à $0$ sur la diagonale. Cette variance ne contient que le risque de processus : l'erreur d'estimation des paramètres n'est pas incluse. Avec les conventions de variance terminale, l'origine~2, qui n'a qu'une cellule future, a une variance nulle : ce risque est sous-estimé.
+
+\subsection*{Bootstrap non paramétrique de résidus}
+Les résidus de Pearson des deux flux, ajustés des degrés de liberté puis centrés, sont rééchantillonnés séparément :
+\[
+n_{i,j}=\sqrt{\tfrac{n-j+1}{n-j}}\;\frac{N_{i,j}-\widehat\lambda_jE_i}{\widehat\sigma_j\sqrt{E_i}},\qquad
+d_{i,j}=\sqrt{\tfrac{n-j}{n-j-1}}\;\frac{D_{i,j+1}-\widehat\delta_jC_{i,j}}{\widehat\tau_j\sqrt{C_{i,j}}}.
+\]
+Pour chaque scénario : (1) reconstruction d'un pseudo-passé $N^*_{i,j}=\widehat\lambda_jE_i+\widehat\sigma_j\sqrt{E_i}\,n^*$ et $D^*_{i,j+1}=\widehat\delta_jC_{i,j}+\widehat\tau_j\sqrt{C_{i,j}}\,d^*$ ; (2) réestimation de $\lambda,\delta,\sigma,\tau$ (erreur d'estimation) ; (3) projection stochastique du futur
+\[
+C^*_{i,j}=\max\!\Bigl(\lambda^*_jE_i+\sigma^*_j\sqrt{E_i}\,n^*+(1-\delta^*_{j-1})C^*_{i,j-1}-\tau^*_{j-1}\sqrt{C^*_{i,j-1}}\,d^*,\;0\Bigr),
+\]
+où le plancher à zéro est celui du cours : il est compté, jamais écarté.
+\begin{table}[H]\centering\small
+\tabSchnieperBootstrap
+\caption{Bootstrap de l'exemple 5.4 (5\,000 scénarios, graine 42), en unités du cours. L'écart-type du bootstrap est cohérent avec la somme quadratique de l'erreur de paramètres et de la variance de processus.}
+\end{table}
+
+\newpage
+\subsection*{Contrôles contre les valeurs imprimées du cours}
+\begin{table}[H]\centering\small
+\tabSchnieperControles
+\caption{Reproduction des valeurs du cours, après arrondi identique. L'exemple 5.6 du cours (nombres au-dessus d'un seuil, 7,97 sinistres à venir) est reproduit par les tests.}
+\end{table}
+\begin{limitbox}
+Un seul triangle pédagogique de sept années ; aucune validation rétrospective n'est possible sans autre jeu $N/D/E$. La Table~6 du cours (écart-type relatif d'environ 43\,\%) n'est pas reproduite : le texte du cours la rattache à un jeu de données ambigu, et notre bootstrap donne 38\,\% sur l'exemple 5.4. Aucun facteur de queue ni inflation ; les quantiles ne sont pas un SCR à un an.
+\end{limitbox}
+
+\newpage
 \section{Références et diagonales masquées}
 \subsection*{Réconciliation avec une implémentation externe}
 Les calculs ont été comparés à \texttt{chainladder 0.10.1}, avec pondération par volume, variance finale « Mack » et queue égale à 1.
@@ -293,6 +392,7 @@ Sur le cas CAS/NAIC, les ratios inférieurs à 1 indiquent une surestimation des
 \subsection*{Fonctionnalités livrées}
 \begin{itemize}
 \item Interface Streamlit/Plotly : source ou CSV, nature, unité et date d'évaluation ; triangle observé/projeté, résultats par origine, facteurs et diagnostics.
+\item Onglet Schnieper : décomposition IBNR/IBNER par année, paramètres, variance de processus et bootstrap à graine explicite.
 \item Simulation à graine explicite ; histogramme et quantiles, diagnostics signés et stabilité Monte-Carlo par lots.
 \item Exports JSON et CSV, avec source, hypothèses, version du moteur et empreinte des données/métadonnées.
 \item Changer de triangle invalide l'affichage du bootstrap précédent. Les fichiers importés restent en mémoire de session ; aucun enregistrement automatique de données client.
@@ -311,7 +411,7 @@ La comparaison exécutée utilise l'implémentation Python indépendante de la b
 \item Inflation, actualisation et risque de modèle ; aucun de ces éléments n'est implicitement couvert par la RMSEP ou le bootstrap.
 \end{itemize}
 
-\smallnote{Schnieper exige de vrais triangles de nouveaux sinistres $N$, de révisions $D$ et des expositions $E$. Le triangle cumulé seul ne permet pas d'identifier cette décomposition. L'inflation devrait être traitée sur les incréments par année calendaire, avec indices et scénarios documentés. Ces deux modules sont des extensions prévues, pas des résultats livrés.}
+\smallnote{Schnieper exige de vrais triangles de nouveaux sinistres $N$, de révisions $D$ et des expositions $E$ : le triangle cumulé seul ne permet pas d'identifier cette décomposition, et l'outil ne l'applique donc qu'au jeu $N/D/E$ du cours. L'inflation devrait être traitée sur les incréments par année calendaire, avec indices et scénarios documentés ; elle reste une extension prévue, pas un résultat livré.}
 
 \subsection*{Code, méthodes et sources}
 \small

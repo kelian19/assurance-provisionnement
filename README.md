@@ -1,6 +1,6 @@
 # Clair · Provisionnement et incertitude
 
-Outil métier **Python / Streamlit / Plotly** : import d'un triangle, Chain-Ladder, erreur de prédiction de Mack, bootstrap ODP, validation rétrospective et exports traçables.
+Outil métier **Python / Streamlit / Plotly** : import d'un triangle, Chain-Ladder, erreur de prédiction de Mack, bootstrap ODP, **modèle de Schnieper (vrais IBNR / IBNER)**, validation rétrospective et exports traçables.
 
 Le moteur et l'interface sont réalisés. **Démonstration locale uniquement : aucun site n'a été déployé et aucun post LinkedIn n'a été publié.**
 
@@ -31,6 +31,20 @@ Les données du cours sont téléchargées explicitement par prepare_data, jamai
 Les résultats sont exprimés dans l'unité de chaque source ; ils ne sont pas automatiquement des euros. Le cas CAS/NAIC est un seul groupe et une seule branche, sans agrégation susceptible de doubler groupes et entités.
 
 La comparaison indépendante avec chainladder utilise exactement le même triangle, pondération par volume, variance finale « Mack » et queue égale à 1. Les écarts numériques sont inférieurs à 10⁻⁶ unité. Le cours et GenIns diffèrent de 4 unités en une cellule : cette différence est conservée, pas « corrigée » pour obtenir artificiellement la même référence.
+
+## Schnieper : vrais IBNR et révisions (cours N. Baradel, §5 et §6.4)
+
+Le modèle sépare les **nouveaux sinistres** N (proportionnels à une exposition E : vrais IBNR) des **révisions** D des sinistres connus (proportionnelles à la charge : IBNER), avec C = ΣN − ΣD. Il exige les trois entrées N, D, E : un triangle cumulé seul ne permet pas de les reconstituer, donc l'outil l'applique au jeu N/D/E de l'exemple 5.4 du cours (téléchargé par `prepare_data`, vérifié par empreinte). Le moteur (`reserving/schnieper.py`) accepte tout autre jeu N/D/E valide.
+
+| Exemple 5.4 du cours | Valeur |
+|---|---:|
+| Provision Schnieper | **283,9** (cours : 283,9) |
+| dont vrais IBNR / IBNER | 311,1 / −27,2 |
+| Mack sur le même triangle cumulé | 464,2 (cours : 464,2) |
+| Écart-type de processus (paramètres connus) | 66,8 |
+| Bootstrap de résidus, 5 000 scénarios, graine 42 : moyenne / écart-type / Q95 | 283,7 / 109,0 / 464,0 |
+
+λ, δ, σ, τ, ultimes, provisions par année, totaux Schnieper et Mack sont identiques aux valeurs imprimées dans le cours ; l'exemple 5.6 (nombres au-dessus d'un seuil, 7,97) est aussi testé. Limites explicites : variance analytique de **processus seul** (σ²ₙ = τ²ₙ₋₁ = 0 par convention du cours, ce qui annule le risque de l'année 2), un seul triangle pédagogique de 7 années, aucune validation rétrospective possible, et la Table 6 du cours (écart-type ≈ 43 %) n'est pas reproduite car son jeu de données est ambigu dans le texte. Détail : [reports/RESULTATS_SCHNIEPER.md](reports/RESULTATS_SCHNIEPER.md) ; régénération : `python -m pipeline.schnieper_report`, qui réécrit aussi les tableaux de la note LaTeX (`docs/latex/tables_schnieper.tex`).
 
 ## Parcours métier
 
@@ -70,14 +84,14 @@ La validation R facultative est dans `references/validate_mack.R`. Elle n'a pas 
 
 ## Organisation
 
-- `reserving/` : moteur déterministe, bootstrap, lecture, validation et export, sans dépendance à Streamlit.
+- `reserving/` : moteur déterministe (Mack, Schnieper), bootstrap, lecture, validation et export, sans dépendance à Streamlit.
 - `app.py` : interface métier locale.
 - `pipeline/` : récupération et validation reproductibles.
 - `tests/` : tests actuariels et parcours de l'interface.
 - `reports/` : résultats constatés, sources et limites.
 - `docs/` : plan, méthodologie et brouillon LinkedIn.
 
-Schnieper et inflation restent des extensions. Avant une exploitation compagnie, il faut valider le périmètre des données, l'échelle monétaire, la stabilité du développement et la queue, puis obtenir une revue actuarielle indépendante.
+L'inflation reste une extension. Avant une exploitation compagnie, il faut valider le périmètre des données, l'échelle monétaire, la stabilité du développement et la queue, puis obtenir une revue actuarielle indépendante.
 
 ## Note méthodologique à partager
 

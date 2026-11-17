@@ -121,4 +121,8 @@ Le projet 2 est désormais implémenté dans ce dépôt : moteur Chain-Ladder/Ma
 
 Le montant du cours est reproduit exactement ; GenIns est conservé séparément en raison d'un écart de 4 unités dans une cellule. Les sources et statistiques sont versionnées, les fichiers bruts restent hors Git. La validation R est fournie mais non exécutée faute de Rscript.
 
-Les documents à jour sont README.md, docs/METHODOLOGIE.md et reports/RESULTATS.md. Les indications antérieures de « projet à développer » sont conservées comme historique de cadrage, sans décrire l'état actuel. Schnieper et inflation restent des extensions.
+Les documents à jour sont README.md, docs/METHODOLOGIE.md et reports/RESULTATS.md. Les indications antérieures de « projet à développer » sont conservées comme historique de cadrage, sans décrire l'état actuel. L'inflation reste une extension.
+
+## Mise à jour — Schnieper réalisé
+
+Le modèle de Schnieper est implémenté (`reserving/schnieper.py`) sur les triangles N, D et E du cours : estimateurs, décomposition vrais IBNR / IBNER, variance de processus (lemme 5.13), bootstrap de résidus (§6.4.1), onglet Streamlit et section de la note LaTeX avec tableaux générés. Les valeurs de l'exemple 5.4 (provision 283,9 ; Mack 464,2) et de l'exemple 5.6 (7,97) sont reproduites. Résultats et limites : reports/RESULTATS_SCHNIEPER.md.
