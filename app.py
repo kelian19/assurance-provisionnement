@@ -12,6 +12,7 @@ from reserving.triangle import read_csv,to_incremental,observed_mask
 from reserving.mack import mack
 from reserving.bootstrap import odp_bootstrap
 from reserving.schnieper import schnieper,schnieper_bootstrap
+from reserving.merz_wuthrich import merz_wuthrich
 from reserving.backtest import diagonal_backtest,backtest_summary
 from reserving.export import triangle_fingerprint,report_json
 
@@ -75,7 +76,7 @@ st.caption('Montants dans l’unité indiquée ; aucune conversion automatique e
 if result.diagnostics['negative_observed_increments']:
  st.warning(f"{result.diagnostics['negative_observed_increments']} incrément(s) négatif(s) : les reprises restent dans Mack. Le bootstrap ODP de cette V1 sera indisponible.")
 
-t_data,t_est,t_unc,t_sch,t_val,t_math=st.tabs(['Données & triangle','Estimation','Incertitude','Schnieper','Validation','Méthode & maths'])
+t_data,t_est,t_unc,t_mw,t_sch,t_val,t_math=st.tabs(['Données & triangle','Estimation','Incertitude','Vue à un an','Schnieper','Validation','Méthode & maths'])
 with t_data:
  st.subheader('Des observations aux projections')
  mode=st.radio('Triangle à afficher',['Observé','Projeté','Incréments observés'],horizontal=True,key='triangle_view')
@@ -128,6 +129,21 @@ with t_unc:
   with st.expander('Diagnostics et stabilité Monte-Carlo'):
    st.json(bootstrap.diagnostics);st.write('Les quatre quantiles Q95 par lots sont un diagnostic de stabilité, pas un intervalle de confiance.')
   st.download_button('Exporter les scénarios',pd.DataFrame({'scenario':np.arange(1,len(bootstrap.predictive_reserves)+1),'reserve':bootstrap.predictive_reserves}).to_csv(index=False),file_name='scenarios_bootstrap.csv',mime='text/csv')
+with t_mw:
+ st.subheader('Ce qui se révélera en un an')
+ st.write('Mack mesure l’incertitude sur la charge **ultime**, tout le run-off. Solvabilité II raisonne à **un an** : de combien l’estimation de l’ultime peut-elle bouger quand la prochaine diagonale sera observée ? C’est le **résultat de développement (CDR)** de Merz et Wüthrich (2008), d’espérance nulle, dont on estime l’erreur quadratique.')
+ try:mw=merz_wuthrich(triangle.cumulative)
+ except ValueError as error:st.error(str(error));mw=None
+ if mw is not None:
+  m1,m2,m3=st.columns(3)
+  m1.metric('Erreur Mack (ultime)',fmt(mw.total_rmsep_mack));m2.metric('Erreur du CDR à un an',fmt(mw.total_rmsep_cdr));m3.metric('Part révélée en un an',f'{100*mw.one_year_share:.0f} %')
+  frame=mw.summary(triangle)
+  fig=go.Figure([go.Bar(name='Mack (ultime)',x=frame.origin,y=frame.mack_rmsep,marker_color='#b9c9a8'),go.Bar(name='CDR à un an',x=frame.origin,y=frame.cdr_rmsep,marker_color='#174f43')])
+  fig.update_layout(barmode='group',xaxis_title='Année de survenance',yaxis_title='Racine de la msep',paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)',legend=dict(orientation='h'))
+  st.plotly_chart(fig,width='stretch')
+  st.dataframe(frame.assign(part_un_an=frame.cdr_rmsep/frame.mack_rmsep.where(frame.mack_rmsep>0)),width='stretch',hide_index=True)
+  st.caption('Contrôles : sur le triangle de l’article (MW2008) le moteur redonne les valeurs publiées (81 080 et 108 401) ; pour l’origine à qui il ne reste qu’une période, l’erreur à un an égale celle de Mack. Ce n’est pas un SCR : il manque la marge de risque et une mesure de risque à 99,5 %, qui demande une hypothèse de loi.')
+  st.download_button('Exporter la vue à un an',frame.to_csv(index=False),file_name='cdr_un_an.csv',mime='text/csv')
 with t_sch:
  st.subheader('Séparer les vrais IBNR des révisions de sinistres connus')
  st.write('Le modèle de Schnieper décompose le développement en deux flux : les **nouveaux sinistres** N, proportionnels à une exposition (vrais IBNR), et les **révisions** D des sinistres déjà connus, proportionnelles à la charge actuelle (IBNER). Il exige donc trois entrées — N, D et l’exposition E — qu’un triangle cumulé seul ne permet pas de reconstituer. Cet onglet utilise l’exemple 5.4 du cours (indépendant du triangle choisi à gauche).')

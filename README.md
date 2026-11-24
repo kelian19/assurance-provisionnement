@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/kelian19/assurance-provisionnement/actions/workflows/tests.yml/badge.svg)](https://github.com/kelian19/assurance-provisionnement/actions/workflows/tests.yml)
 
-Outil métier **Python / Streamlit / Plotly** : import d'un triangle, Chain-Ladder, erreur de prédiction de Mack, bootstrap ODP, **modèle de Schnieper (vrais IBNR / IBNER)**, validation rétrospective et exports traçables.
+Outil métier **Python / Streamlit / Plotly** : import d'un triangle, Chain-Ladder, erreur de prédiction de Mack, bootstrap ODP, **vue à un an (Merz–Wüthrich)**, **modèle de Schnieper (vrais IBNR / IBNER)**, validation rétrospective et exports traçables.
 
 Le moteur et l'interface sont réalisés. **Démonstration locale uniquement : aucun site n'a été déployé et aucun post LinkedIn n'a été publié.**
 
@@ -33,6 +33,19 @@ Les données du cours sont téléchargées explicitement par prepare_data, jamai
 Les résultats sont exprimés dans l'unité de chaque source ; ils ne sont pas automatiquement des euros. Le cas CAS/NAIC est un seul groupe et une seule branche, sans agrégation susceptible de doubler groupes et entités.
 
 La comparaison indépendante avec chainladder utilise exactement le même triangle, pondération par volume, variance finale « Mack » et queue égale à 1. Les écarts numériques sont inférieurs à 10⁻⁶ unité. Le cours et GenIns diffèrent de 4 unités en une cellule : cette différence est conservée, pas « corrigée » pour obtenir artificiellement la même référence.
+
+## Vue à un an : résultat de développement (Merz–Wüthrich 2008)
+
+Mack mesure l'incertitude sur l'**ultime** ; Solvabilité II raisonne à **un an**. Le moteur (`reserving/merz_wuthrich.py`) estime l'erreur quadratique du résultat de développement de la prochaine année calendaire, avec les mêmes facteurs et variances que Mack.
+
+| Triangle | Développement futur | √msep Mack (ultime) | √msep CDR à un an | Un an / ultime |
+|---|---:|---:|---:|---:|
+| Triangle du cours | 18 680 848 | 2 447 093 | **1 778 966** | 73 % |
+| RAA | 52 135 | 26 909 | 25 182 | 94 % |
+| CAS/NAIC · State Farm · ppauto | 12 586 821 | 550 736 | 518 502 | 94 % |
+| Merz et Wüthrich (2008), contrôle | 2 237 826 | 108 401 | **81 080** (publié : 81 080) | 75 % |
+
+Contrôles : le triangle de l'article redonne ses totaux publiés à moins d'une unité, et pour l'origine à qui il ne reste qu'une période l'erreur à un an égale exactement celle de Mack (tests). Ce n'est pas un SCR : il manque la marge de risque et une mesure de risque à 99,5 %, qui exige une hypothèse de loi. Onglet **Vue à un an** dans l'application ; détail : [reports/RESULTATS_MERZ_WUTHRICH.md](reports/RESULTATS_MERZ_WUTHRICH.md) ; régénération : `python -m pipeline.merz_wuthrich_report`.
 
 ## Schnieper : vrais IBNR et révisions (cours N. Baradel, §5 et §6.4)
 
@@ -86,7 +99,7 @@ La validation R facultative est dans `references/validate_mack.R`. Elle n'a pas 
 
 ## Organisation
 
-- `reserving/` : moteur déterministe (Mack, Schnieper), bootstrap, lecture, validation et export, sans dépendance à Streamlit.
+- `reserving/` : moteur déterministe (Mack, Merz–Wüthrich, Schnieper), bootstrap, lecture, validation et export, sans dépendance à Streamlit.
 - `app.py` : interface métier locale.
 - `pipeline/` : récupération et validation reproductibles.
 - `tests/` : tests actuariels et parcours de l'interface.

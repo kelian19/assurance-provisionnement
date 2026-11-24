@@ -37,3 +37,9 @@ def test_schnieper_tab_shows_course_reference_and_runs_its_own_bootstrap():
  assert not app.exception
  assert app.metric[0].value=='12 586 821,36'
  assert {m.label:m.value for m in app.metric}['Provision Schnieper']=='283,94'
+
+def test_one_year_tab_shows_merz_wuthrich():
+ app=AppTest.from_file(str(ROOT/'app.py'),default_timeout=90).run()
+ assert not app.exception
+ values={m.label:m.value for m in app.metric}
+ assert values['Erreur Mack (ultime)']=='2 447 093,03' and values['Erreur du CDR à un an']=='1 778 966,21' and values['Part révélée en un an']=='73 %'

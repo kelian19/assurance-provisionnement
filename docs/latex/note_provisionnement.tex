@@ -59,20 +59,21 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\bfseries\color{Forest}CLAIR / NOTE MÉTHODOLOGIQUE}
-\fancyhead[R]{\small\color{Muted}Version du 12 novembre 2026}
+\fancyhead[R]{\small\color{Muted}Version du 24 novembre 2026}
 \fancyfoot[L]{\footnotesize\color{Muted}Méthodes implémentées, résultats mesurés, limites explicites.}
 \fancyfoot[R]{\footnotesize\color{Forest}\thepage\,/\,\pageref{LastPage}}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 \hypersetup{pdftitle={Clair — Provisionnement : Chain-Ladder, Mack, bootstrap et Schnieper}}
 \input{tables_schnieper.tex}
+\input{tables_mw.tex}
 \begin{document}
 {\small\color{Muted}\textbf{NOTE 02}\quad PROVISIONNEMENT ET INCERTITUDE}
 \vspace{5mm}
 
 {\fontsize{27}{31}\selectfont\bfseries\color{Forest}Du triangle observé\par au développement futur.}
 
-{\large Chain-Ladder, erreur de prédiction de Mack,\par bootstrap ODP, modèle de Schnieper et validation rétrospective.}
+{\large Chain-Ladder, erreur de prédiction de Mack,\par bootstrap ODP, vue à un an, modèle de Schnieper et validation rétrospective.}
 \vspace{3mm}
 
 \begin{keybox}
@@ -85,6 +86,7 @@
 \item Facteurs Chain-Ladder, ultimes et provisions par origine.
 \item RMSEP de Mack, avec covariance interannuelle dans le total.
 \item Bootstrap ODP de bibliothèque avec correction déterministe des leviers et processus Gamma signé, distinct du bootstrap Mack.
+\item Incertitude à un an (résultat de développement, Merz et Wüthrich 2008), contrôlée sur le triangle de l'article.
 \item Modèle de Schnieper (nouveaux sinistres $N$, révisions $D$, exposition $E$) : séparation des vrais IBNR et de l'IBNER, variance de processus et bootstrap de résidus, sur l'exemple du cours.
 \item Comparaison à une implémentation externe, diagonales connues masquées, tests actuariels et tests de l'interface.
 \end{itemize}
@@ -337,6 +339,46 @@ où le plancher à zéro est celui du cours : il est compté, jamais écarté.
 \end{table}
 \begin{limitbox}
 Un seul triangle pédagogique de sept années ; aucune validation rétrospective n'est possible sans autre jeu $N/D/E$. La Table~6 du cours (écart-type relatif d'environ 43\,\%) n'est pas reproduite : le texte du cours la rattache à un jeu de données ambigu, et notre bootstrap donne 38\,\% sur l'exemple 5.4. Aucun facteur de queue ni inflation ; les quantiles ne sont pas un SCR à un an.
+\end{limitbox}
+
+\newpage
+\section{Vue à un an : le résultat de développement}\label{sec:mw}
+\subsection*{Pourquoi un an}
+Mack mesure l'erreur sur la charge \emph{ultime}, c'est-à-dire sur tout le run-off. Solvabilité~II raisonne à horizon d'un an : de combien l'estimation de l'ultime peut-elle bouger quand la prochaine diagonale sera observée ? C'est le \emph{résultat de développement} (CDR) de l'année calendaire $I+1$,
+\[
+\mathrm{CDR}_i(I+1)=\widehat C_{i,n}^{(I)}-\widehat C_{i,n}^{(I+1)},\qquad \mathbb E\bigl[\mathrm{CDR}_i(I+1)\mid\mathcal D_I\bigr]=0,
+\]
+écart entre l'ultime estimé aujourd'hui et celui réestimé avec une diagonale de plus. On estime son erreur quadratique moyenne autour de zéro, avec les mêmes $\widehat f_j$ et $\widehat\sigma_j^2$ que Mack.
+
+\subsection*{Formules de Merz et Wüthrich (2008)}
+Notons $S_j^{I}=\sum_{i\le I-j-1}C_{i,j}$ les sommes de colonnes utilisées aujourd'hui pour $\widehat f_j$, et $S_j^{I+1}=S_j^I+C_{I-j,j}$ celles de l'an prochain. Pour l'origine $i$ de dernier âge observé $d=I-i$, en sommant $\sum'$ sur $j=d+1,\dots,n-1$ :
+\[
+\widehat\Delta_i=\frac{\widehat\sigma_d^2}{\widehat f_d^2S_d^I}+\sum{}'\Bigl(\frac{C_{I-j,j}}{S_j^{I+1}}\Bigr)^2\frac{\widehat\sigma_j^2}{\widehat f_j^2S_j^I},\qquad
+\widehat\Gamma_i=\frac{\widehat\sigma_d^2}{\widehat f_d^2C_{i,d}}+\sum{}'\Bigl(\frac{C_{I-j,j}}{S_j^{I+1}}\Bigr)^2\frac{\widehat\sigma_j^2}{\widehat f_j^2C_{I-j,j}},
+\]
+\[
+\boxed{\widehat{\mathrm{msep}}_{\mathrm{CDR}_i}=\widehat C_{i,n}^2\bigl(\widehat\Gamma_i+\widehat\Delta_i\bigr)}
+\]
+$\widehat\Gamma_i$ est la part de processus, $\widehat\Delta_i$ la part d'estimation. L'agrégation ajoute, pour $i<k$, les termes croisés $2\,\widehat C_{i,n}\widehat C_{k,n}(\widehat\Xi_i+\widehat\Lambda_i)$ de l'article (approximation linéaire). Par rapport à Mack, seule la \emph{prochaine} période contribue pleinement ; les suivantes ne comptent que par la révision de leurs facteurs, pondérée par $(C_{I-j,j}/S_j^{I+1})^2$.
+
+\subsection*{Contrôles}
+Deux contrôles indépendants : sur le triangle publié par Merz et Wüthrich (fourni par \texttt{chainladder}), le moteur redonne leurs totaux ; pour l'origine à qui il ne reste qu'une période, tout se révèle en un an et l'erreur à un an égale exactement celle de Mack (test).
+\begin{table}[H]\centering\small
+\tabMWCheck
+\caption{Reproduction des valeurs publiées par Merz et Wüthrich (2008).}
+\end{table}
+
+\subsection*{Résultats}
+\begin{table}[H]\centering\small
+\tabMWCourse
+\caption{Triangle du cours : erreur de Mack sur l'ultime et erreur du CDR à un an, par origine (racines des msep).}
+\end{table}
+\begin{table}[H]\centering\small
+\tabMWDatasets
+\caption{Tous les triangles du projet. La part révélée en un an est élevée quand le développement est rapide.}
+\end{table}
+\begin{limitbox}
+L'erreur du CDR est une msep, pas un quantile : passer à une VaR à 99,5\,\% exige une hypothèse de loi. Elle ne constitue pas un SCR (il manque la marge de risque) et garde les hypothèses de Mack : indépendance des origines, queue égale à 1, ni inflation ni actualisation.
 \end{limitbox}
 
 \newpage
