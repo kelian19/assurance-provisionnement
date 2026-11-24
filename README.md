@@ -1,5 +1,7 @@
 # Clair · Provisionnement et incertitude
 
+[![Tests](https://github.com/kelian19/assurance-provisionnement/actions/workflows/tests.yml/badge.svg)](https://github.com/kelian19/assurance-provisionnement/actions/workflows/tests.yml)
+
 Outil métier **Python / Streamlit / Plotly** : import d'un triangle, Chain-Ladder, erreur de prédiction de Mack, bootstrap ODP, **modèle de Schnieper (vrais IBNR / IBNER)**, validation rétrospective et exports traçables.
 
 Le moteur et l'interface sont réalisés. **Démonstration locale uniquement : aucun site n'a été déployé et aucun post LinkedIn n'a été publié.**
